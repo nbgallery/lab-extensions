@@ -1,0 +1,19 @@
+{
+  "title": "Environment Life",
+  "description": "Reporting of how much time is left for the environment to live when operating in an environment that automatically kills users sessions after a certain amount of time",
+  "type": "object",
+  "properties":{
+    "creation_time": {
+      "type": "string",
+      "title": "Date/Time Environment was registered",
+      "description": "",
+      "default": ""
+    },
+    "termination_time": {
+      "type": "string",
+      "title": "Date/Time Environment will be terminiated",
+      "description": "",
+      "default": ""
+    }
+  }
+}
