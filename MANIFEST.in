@@ -2,7 +2,7 @@
 include README.md
 include pyproject.toml
 
-include jupyter-config/jupyterlab-nbgallery.json
+include jupyter-config/jupyterlab_nbgallery.json
 
 include package.json
 include ts*.json

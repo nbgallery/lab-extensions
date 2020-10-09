@@ -1,7 +1,7 @@
 {
   "NotebookApp": {
     "nbserver_extensions": {
-      "jupyterlab-nbgallery": true
+      "jupyterlab_nbgallery": true
     }
   }
 }

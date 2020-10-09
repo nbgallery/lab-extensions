@@ -66,7 +66,7 @@ const extension: JupyterFrontEndPlugin<void> = {
       nbgallery_url=data['NBGALLERY_URL'];
       nbgallery_client_name=data['NBGALLERY_CLIENT_NAME'];
     } catch(reason) {
-      console.error(`ERROR on get /nbgallery/environment.\n ${reason}`);
+      console.error(`ERROR on get /jupyter_nbgallery/environment.\n ${reason}`);
     }
     Promise.all([app.restored, settings.load('@jupyterlab-nbgallery/environment-registration:environment-registration')])
       .then(([, setting]) => {

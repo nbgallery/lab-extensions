@@ -13,7 +13,7 @@ import setuptools
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 # The name of the project
-name="jupyterlab-nbgallery"
+name="jupyterlab_nbgallery"
 
 # Ensure a valid python version
 ensure_python(">=3.5")
@@ -38,7 +38,7 @@ package_data_spec = {
 data_files_spec = [
     ("share/jupyter/lab/extensions", lab_path, "*.tgz"),
     ("etc/jupyter/jupyter_notebook_config.d",
-     "jupyter-config", "jupyterlab-nbgallery.json"),
+     "jupyter-config", "jupyterlab_nbgallery.json"),
 ]
 
 cmdclass = create_cmdclass("jsdeps",
