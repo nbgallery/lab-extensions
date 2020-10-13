@@ -15,9 +15,6 @@ def load_jupyter_server_extension(lab_app):
     """
     url_path = "jupyterlab_nbgallery"
     setup_handlers(lab_app.web_app, url_path)
-    f = open("/tmp/HEEEELP","w")
-    f.write("Registered nbgallery extension at URL path /{}".format(url_path))
-    f.close()
     lab_app.log.error(
         "Registered nbgallery extension at URL path /{}".format(url_path)
     )
