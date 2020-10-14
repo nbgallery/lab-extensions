@@ -22,7 +22,8 @@
   "workspaces": {
     "packages": [
       "environment-registration",
-      "environment-life"
+      "environment-life",
+      "autodownload"
     ]
   },
   "devDependencies": {

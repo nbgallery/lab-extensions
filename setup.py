@@ -27,6 +27,7 @@ lab_path = pjoin(HERE, "labextension")
 jstargets = [
     pjoin(HERE, "environment-life", "lib", "index.js"),
     pjoin(HERE, "environment-registration", "lib", "index.js"),
+    pjoin(HERE, "autodownload", "lib", "index.js"),
 ]
 
 package_data_spec = {
@@ -66,6 +67,7 @@ setup_args = dict(
     packages=setuptools.find_packages(),
     install_requires=[
         "jupyterlab~=2.0",
+        "jupyter-nbgallery~=1.1.1",
     ],
     zip_safe=False,
     include_package_data=True,
