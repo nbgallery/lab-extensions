@@ -13,7 +13,7 @@ class EnvironmentHandler(APIHandler):
     # Jupyter server
     @tornado.web.authenticated
     def get(self):
-        self.finish(json.dumps({"NBGALLERY_URL" : os.getenv("NBGALLERY_URL"), "NBGALLERY_CLIENT_NAME" : os.getenv("NBGALLERY_CLIENT_NAME") }))
+        self.finish(json.dumps({"NBGALLERY_URL" : os.getenv("NBGALLERY_URL"), "NBGALLERY_CLIENT_NAME" : os.getenv("NBGALLERY_CLIENT_NAME"), "NBGALLERY_ENABLE_AUTODOWNLOAD" : os.getenv("NBGALLERY_ENABLE_AUTODOWNLOAD") }))
 
 class ExpirationHandler(APIHandler):
     # The following decorator should be present on all verb methods (head, get, post,
