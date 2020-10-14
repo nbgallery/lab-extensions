@@ -21,7 +21,7 @@ class ExpirationHandler(APIHandler):
     # Jupyter server
     @tornado.web.authenticated
     def get(self):
-        self.finish(json.dumps({"creation_time" : os.getenv("NB_SPAWN_DATE"), "termination_time" : os.getenv("NB_EXPIRES") }))
+        self.finish(json.dumps({"NBGALLERY_CREATION_TIME" : os.getenv("NBGALLERY_CREATION_TIME"), "NBGALLERY_TERMINATION_TIME" : os.getenv("NBGALLERY_TERMINATION_TIME") }))
 
 
 def setup_handlers(web_app, url_path):

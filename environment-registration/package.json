@@ -60,16 +60,6 @@
     "style/*.css"
   ],
   "jupyterlab": {
-    "discovery" :{
-      "server": {
-        "managers": [
-          "pip"
-        ],
-        "base": {
-          "name": "nbgallery"
-        }
-      }
-    },
     "extension": true,
     "schemaDir": "schema"
   }

@@ -10,7 +10,7 @@ import { IStatusBar } from '@jupyterlab/statusbar';
 import { requestAPI } from './server-api';
 
 /**
- * Initialization data for the hello-world extension.
+ * Initialization data for the environment-life extension.
  */
 const extension: JupyterFrontEndPlugin<void> = {
   id: '@nbgallery/environment-life:environment-life',
@@ -20,10 +20,9 @@ const extension: JupyterFrontEndPlugin<void> = {
                    statusBar: IStatusBar
   ) => {
     let termination_time = "";
-
     try {
       const data = await requestAPI<any>('expiration');
-      termination_time = data['termination_time'];
+      termination_time = data['NBGALLERY_TERMINATION_TIME'];
       displayExpiration();
     } catch(reason) {
       console.error(`ERROR on get /jupyter_nbgallery/environment.\n ${reason}`);
@@ -48,6 +47,6 @@ class expirationWidget extends Widget {
     super();
     this.addClass('jp-expiration-widget');
     this.id = 'environment_expires';
-    this.title.label = 'Bench Expires';
+    this.title.label = 'Jupyter Environment Expires';
   }
 }
