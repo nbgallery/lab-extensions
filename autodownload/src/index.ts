@@ -106,7 +106,7 @@ const extension: JupyterFrontEndPlugin<void> = {
                   for (i in response) {
                     var metadata = response[i];
                     var url = base + '/notebooks/' + metadata.uuid + '/download?clickstream=false';
-                    fetch_notebook(url, folder, metadata.title.replace(/\//g,'∕'));
+                    fetch_notebook(url, folder, metadata.title.replace(/\//g,'⁄'));
                   }
                 }
               });
