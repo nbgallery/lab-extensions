@@ -1,0 +1,8 @@
+.nbgallery-button{
+        color:black !important;
+}
+[data-jp-theme-light="false"]
+.nbgallery-button{
+        color:white !important;
+}
+

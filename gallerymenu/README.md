@@ -1,0 +1,1 @@
+# NBGALLERY Gallery Menu Extension
