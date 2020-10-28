@@ -1,0 +1,25 @@
+{
+  "title": "Environment Registration",
+  "description": "Environment Regitration.",
+  "type": "object",
+  "properties":{
+    "registered": {
+      "type": "boolean",
+      "title": "Is registered?",
+      "description": "foo",
+      "default": false
+    },
+    "nbgallery_url": {
+      "type": "string",
+      "title": "URL User for registration",
+      "description": "foo",
+      "default":"http://localhost:3000"
+    },
+    "nbgallery_client_name": {
+      "type": "string",
+      "title": "Client Name",
+      "description": "foo",
+      "default": "JupyterLab"
+    }
+  }
+}

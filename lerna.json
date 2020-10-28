@@ -1,0 +1,10 @@
+
+{
+"packages": [
+  "environment-registration",
+  "environment-life"
+],
+"npmClient": "jlpm",
+"useWorkspaces": true,
+"version": "independent"
+}
