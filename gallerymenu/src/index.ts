@@ -43,6 +43,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
   requires: [INotebookTracker]
 };
 
+class stagingJson{
+  link :string;
+  commit :string;
+  staging_id :string;
+  filename :string;
+  clone :string;
+}
 
 export
 class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
@@ -62,6 +69,7 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
   panel :NotebookPanel;
   context: DocumentRegistry.IContext<INotebookModel>;
   notebooks: INotebookTracker
+
   //saveHandler: SaveHandler;
   createNew(panel: NotebookPanel, context: DocumentRegistry.IContext<INotebookModel>): IDisposable{
     console.log("Creating button Group");
@@ -70,7 +78,7 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
     this.loaded = false;
     this.context = context;
     this.panel = panel;
-    this.build_buttons(context);
+    this.buildButtons(context);
     return new DisposableDelegate(() => {
       this.nbgallery_link.dispose();
       this.upload.dispose();
@@ -112,26 +120,88 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
     this.toggleButtons();
   }
 
+  updateMetadata(response :stagingJson, notebook_base :string){
+    if(!this.gallery_metadata){
+      this.gallery_metadata = {};
+    }
+    this.gallery_metadata.commit = response.commit;
+    this.gallery_metadata.staging_id = response.staging_id;
+    this.gallery_metadata.filename = response.filename;
+    if(response.link){
+      this.gallery_metadata.uuid = response.link;
+      this.gallery_metadata.link = response.link;
+    } else {
+      this.gallery_metadata.uuid = response.clone;
+      this.gallery_metadata.clone = response.clone;
+    }
+    this.context.model.metadata.set("gallery",this.gallery_metadata);
+    this.triggerSave();
+    this.toggleButtons();
+  }
+  finishUpload (response :stagingJson, notebook_base :string, change_request :boolean){
+    if(this.gallery_metadata && this.gallery_metadata["link"]){
+      if(change_request){
+        window.open(notebook_base + "/notebook/" + response.link+ "?staged=" + response.staging_id + "#CHANGE_REQ");
+      }else{
+        window.open(notebook_base + "/notebook/" + response.link+ "?staged=" + response.staging_id + "#UPDATE");
+      }
+    }else{
+      window.open(notebook_base + "?staged=" + response.staging_id + "#STAGE");
+    }
+    this.updateMetadata(response,notebook_base);
+    this.toggleButtons();
+  }
 
-  build_buttons(context: DocumentRegistry.IContext<INotebookModel>) {
+  buildButtons(context: DocumentRegistry.IContext<INotebookModel>) {
     //load this later
     this.nbgallery_url="";
     let upload_callback = async () => {
       this.triggerSave();
-      this.strip_output(this.context.model);
-      this.toggleButtons();
+      let gallery_url = new URL(this.nbgallery_url);
+      if(this.gallery_metadata && this.gallery_metadata['gallery_url'] && this.gallery_metadata['gallery_url'].length>0){
+          gallery_url = new URL(this.gallery_metadata['gallery_url']);
+          this.gallery_metadata['uuid']=this.gallery_metadata['link']=this.gallery_metadata['clone']="";
+      }
+      let results = await this.stageNotebook(gallery_url,"",JSON.stringify(this.strip_output(this.context.model)));
+      if(results){
+        this.finishUpload(results,gallery_url.origin, false);
+      }
+    };
+    let save_callback = async () => {
+      this.triggerSave();
+      let gallery_url = new URL(this.nbgallery_url);
+      if(this.gallery_metadata['gallery_url'] && this.gallery_metadata['gallery_url'].length>0){
+          gallery_url = new URL(this.gallery_metadata['gallery_url']);
+      }
+      let url = URLExt.join(
+        gallery_url.origin,
+        'notebooks',
+        this.gallery_metadata['uuid'],
+        "metadata"
+      );
+      let changed = await (this.checkForUpdates(url));
+      if(changed){
+        //There are changes, need to go through a process of
+      }else{
+        let results = await this.stageNotebook(gallery_url,this.gallery_metadata['uuid'],JSON.stringify(this.strip_output(this.context.model)));
+        if(results){
+          this.finishUpload(results,gallery_url.origin, false);
+        }
+      }
     };
     let changereq_callback = async () => {
       this.triggerSave();
-      this.strip_output(this.context.model);
+      let gallery_url = new URL(this.nbgallery_url);
+      if(this.gallery_metadata && this.gallery_metadata['gallery_url'] && this.gallery_metadata['gallery_url'].length>0){
+          gallery_url = new URL(this.gallery_metadata['gallery_url']);
+      }
+      let results = await this.stageNotebook(gallery_url,this.gallery_metadata['uuid'],JSON.stringify(this.strip_output(this.context.model)));
+      if(results){
+        this.finishUpload(results,gallery_url.origin, true);
+      }
       this.toggleButtons();
     };
     let redownload_callback = () => {
-      this.toggleButtons();
-    };
-    let fork_callback = () => {
-      this.triggerSave();
-      this.strip_output(this.context.model);
       this.toggleButtons();
     };
     let link_callback = () => {
@@ -189,7 +259,7 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
     this.save =  new ToolbarButton({
       className: 'nbgallery-button',
       iconClass: 'fa fa-save',
-      onClick: upload_callback,
+      onClick: save_callback,
       tooltip: "Save changes to NBGallery"
     });
     this.changereq =  new ToolbarButton({
@@ -220,7 +290,7 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
     this.fork =  new ToolbarButton({
       className: 'nbgallery-button',
       iconClass: 'fa fa-code-branch',
-      onClick: fork_callback,
+      onClick: upload_callback,
       tooltip: "Upload to NBGallery as a New Notebook (fork)"
     });
     // Hack Delay for now
@@ -231,8 +301,6 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
       .then(() =>{
         this.panelChanged();
       });
-      // let buttons = this;
-      // setTimeout(function(){},2000);
     }
     this.load();
   }
@@ -270,9 +338,13 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
     }else{
       this.nbgallery_link.hide();
     }
+    if(this.gallery_metadata && this.gallery_metadata['link'] && this.gallery_metadata['link'].length>0){
+      this.save.show();
+    }else{
+      this.save.hide();
+    }
     if(this.gallery_metadata && this.gallery_metadata['uuid'] && this.gallery_metadata['uuid'].length>0){
       console.debug("Gallery metadata uuid is set");
-      this.save.show();
       this.upload.hide();
       this.fork.show();
       this.unlink.show();
@@ -280,7 +352,6 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
       this.changereq.show();
       this.link.hide();
     }else{
-      this.save.hide();
       this.upload.show();
       this.fork.hide();
       this.unlink.hide();
@@ -319,9 +390,7 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
             xhrFields: {withCredentials: true},
             success: function(metadata) {
               self.panel.model.metadata.set("gallery",{
-                link:metadata.uuid,
                 uuid:metadata.uuid,
-                commit:metadata.uuid,
                 git_commit_id:metadata.commit_id,
                 gallery_url: url.origin
               });
@@ -342,14 +411,55 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
       }
     });
   }
-  async stageNotebook(callback :any){
-    let id="";
-    if(this.gallery_metadata['link']){
-      id=this.gallery_metadata['link'];
-    }else if(this.gallery_metadata['clone']){
-      id=this.gallery_metadata['clone'];
+  async stageNotebook(gallery_url :URL, id :string, notebook_content :string) {
+    let stage_url="";
+    stage_url=gallery_url.origin + "/stages?agree=yes";
+    if (id.length>0){
+      stage_url = stage_url + "&id=" + id;
     }
-    return id;
+    console.log("Notebook getting uploaded");
+    console.log(notebook_content);
+    try {
+      let results = await $.ajax({
+        method: "POST",
+        url: stage_url,
+        dataType: 'json',
+        contentType: "text/plain",
+        headers: {
+          Accept: "application/json"
+        },
+        xhrFields: {withCredentials: true},
+        data: notebook_content
+      });
+      return results;
+    } catch (error){
+      console.log("Staging Failed");
+      return;
+    }
+  }
+  async checkForUpdates(url :string){
+    try {
+      let results = await $.ajax({
+        method: "GET",
+        url: url,
+        headers: {
+          Accept: "application/json"
+        },
+        xhrFields: {withCredentials: true}
+      });
+      console.log(results);
+      if(results["commit_id"] != this.gallery_metadata['commit'] ){
+        console.log("It Changed?");
+        console.log(this.gallery_metadata);
+        return true;
+      }else{
+        console.log("No Change");
+        return false;
+      }
+    } catch (error){
+      console.log("Staging Failed");
+      return false;
+    }
   }
 
   triggerSave(){
