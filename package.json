@@ -23,7 +23,8 @@
     "packages": [
       "environment-registration",
       "environment-life",
-      "autodownload"
+      "autodownload",
+      "gallerymenu"
     ]
   },
   "devDependencies": {

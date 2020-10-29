@@ -28,6 +28,7 @@ jstargets = [
     pjoin(HERE, "environment-life", "lib", "index.js"),
     pjoin(HERE, "environment-registration", "lib", "index.js"),
     pjoin(HERE, "autodownload", "lib", "index.js"),
+    pjoin(HERE, "gallerymenu", "lib", "index.js"),
 ]
 
 package_data_spec = {
