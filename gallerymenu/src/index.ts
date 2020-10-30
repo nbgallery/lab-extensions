@@ -10,7 +10,10 @@ import {
 
 import {
   ToolbarButton,
-  InputDialog
+  InputDialog,
+  Dialog,
+  showDialog,
+  showErrorMessage
 } from '@jupyterlab/apputils';
 
 import {
@@ -32,6 +35,8 @@ import { URLExt } from '@jupyterlab/coreutils';
 import 'fa-icons';
 
 import $ from 'jquery';
+
+import { DialogWidget } from './dialog';
 
 /**
 * Creating the Plugin that will add the buttons
@@ -69,6 +74,7 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
   panel :NotebookPanel;
   context: DocumentRegistry.IContext<INotebookModel>;
   notebooks: INotebookTracker
+  dialogPromiseCache: Map<string, Promise<void>> = new Map();
 
   //saveHandler: SaveHandler;
   createNew(panel: NotebookPanel, context: DocumentRegistry.IContext<INotebookModel>): IDisposable{
@@ -99,25 +105,21 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
     });
   }
   panelChanged(){
-    console.log(this.notebooks);
-    console.log(this.notebooks.currentWidget);
-    this.panel=this.notebooks.currentWidget;
-    this.context=this.panel.context;
-    this.gallery_metadata=this.context.model.metadata.toJSON()["gallery"];
-    console.log(this.context);
-    console.log(this.gallery_metadata);
-
-    this.panel.toolbar.insertItem(10,'nbgallery',this.nbgallery_link);
-    //Right->Left order from this line down
-    this.panel.toolbar.insertAfter('nbgallery','gallery-link',this.link);
-    this.panel.toolbar.insertAfter('nbgallery','gallery-unlink',this.unlink);
-    this.panel.toolbar.insertAfter('nbgallery','gallery-download',this.download);
-    this.panel.toolbar.insertAfter('nbgallery','gallery-changereq',this.changereq);
-    this.panel.toolbar.insertAfter('nbgallery','gallery-fork',this.fork);
-    this.panel.toolbar.insertAfter('nbgallery','gallery-save',this.save);
-    this.panel.toolbar.insertAfter('nbgallery','gallery-upload',this.upload);
-    console.log("About to Toggle Buttons");
-    this.toggleButtons();
+    if(this.panel){
+      this.panel=this.notebooks.currentWidget;
+      this.context=this.panel.context;
+      this.gallery_metadata=this.context.model.metadata.toJSON()["gallery"];
+      this.panel.toolbar.insertItem(10,'nbgallery',this.nbgallery_link);
+      //Right->Left order from this line down
+      this.panel.toolbar.insertAfter('nbgallery','gallery-link',this.link);
+      this.panel.toolbar.insertAfter('nbgallery','gallery-unlink',this.unlink);
+      this.panel.toolbar.insertAfter('nbgallery','gallery-download',this.download);
+      this.panel.toolbar.insertAfter('nbgallery','gallery-changereq',this.changereq);
+      this.panel.toolbar.insertAfter('nbgallery','gallery-fork',this.fork);
+      this.panel.toolbar.insertAfter('nbgallery','gallery-save',this.save);
+      this.panel.toolbar.insertAfter('nbgallery','gallery-upload',this.upload);
+      this.toggleButtons();
+    }
   }
 
   updateMetadata(response :stagingJson, notebook_base :string){
@@ -179,9 +181,9 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
         this.gallery_metadata['uuid'],
         "metadata"
       );
-      let changed = await (this.checkForUpdates(url));
+      let changed = await this.checkForUpdates(url);
       if(changed){
-        //There are changes, need to go through a process of
+        this.changedDialog(false);
       }else{
         let results = await this.stageNotebook(gallery_url,this.gallery_metadata['uuid'],JSON.stringify(this.strip_output(this.context.model)));
         if(results){
@@ -201,8 +203,21 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
       }
       this.toggleButtons();
     };
-    let redownload_callback = () => {
-      this.toggleButtons();
+    let redownload_callback = async () => {
+      let gallery_url = new URL(this.nbgallery_url);
+      if(this.gallery_metadata['gallery_url'] && this.gallery_metadata['gallery_url'].length>0){
+          gallery_url = new URL(this.gallery_metadata['gallery_url']);
+      }
+      let url = URLExt.join(
+        gallery_url.origin,
+        'notebooks',
+        this.gallery_metadata['uuid'],
+        "metadata"
+      );
+      let changed = await this.checkForUpdates(url);
+      if(changed){
+        this.changedDialog(false);
+      }
     };
     let link_callback = () => {
       console.log("Link Button Pressed");
@@ -482,8 +497,103 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
     }
     return notebook_json;
   }
-
+  async downloadReplace(){
+    let gallery_url = new URL(this.nbgallery_url);
+    if(this.gallery_metadata && this.gallery_metadata['gallery_url'] && this.gallery_metadata['gallery_url'].length>0){
+        gallery_url = new URL(this.gallery_metadata['gallery_url']);
+    }
+    let url = URLExt.join(
+      gallery_url.origin,
+      'notebooks',
+      this.gallery_metadata['uuid'],
+      "download"
+    );
+    try{
+      let response=await $.ajax({
+        url: url
+      });
+      let notebook = JSON.parse(response);
+      if(this.gallery_metadata["link"]){
+        notebook["metadata"]["gallery"]["link"]=this.gallery_metadata["link"];
+        notebook["metadata"]["gallery"]["clone"] = null;
+      }
+      this.context.model.fromJSON(notebook);
+      this.gallery_metadata["commit"] = notebook.commit;
+      this.triggerSave();
+      this.gallery_metadata=this.context.model.metadata.toJSON()["gallery"];
+    }catch(e){
+      showErrorMessage("Download Error","An error occured attempting to download the specified notebook.");
+    }
+  }
+  async changedDialog(showDiff :boolean):Promise<void> {
+    let buttons: Array<Dialog.IButton>=[];
+    buttons[buttons.length] = Dialog.cancelButton({ label: "Cancel"});
+    if(!showDiff){
+        buttons[buttons.length]=Dialog.okButton({ label: "View Diff"});
+    }
+    buttons[buttons.length]=Dialog.okButton({ label: "Download and Replace Local", displayType: "warn"});
+    if(this.gallery_metadata['link']) {
+      buttons[buttons.length] = Dialog.okButton({ label: "Upload and Replace Remote", displayType: "warn"});
+    }
+    let gallery_url = new URL(this.nbgallery_url);
+    if(this.gallery_metadata && this.gallery_metadata['gallery_url'] && this.gallery_metadata['gallery_url'].length>0){
+        gallery_url = new URL(this.gallery_metadata['gallery_url']);
+    }
+    let title = "Remote Notebook Has Changed";
+    let body = new DialogWidget();
+    if(showDiff){
+      let diff = await $.ajax({
+        method: 'POST',
+        url: gallery_url.origin + "/notebooks/" + this.gallery_metadata['link'] + '/diff',
+        dataType:'json',
+        contentType:"text/plain",
+        headers: {
+          accept: "application/json"
+        },
+        data: JSON.stringify(this.strip_output(this.context.model)),
+        xhrFields: {withCredentials: true},
+      });
+      body.content = diff['css'] + diff['inline'];
+    }else{
+      body.content="The <a href='" + gallery_url.origin + "/notebooks/"+ this.gallery_metadata['uuid']+"' target='_blank'>Remote Notebook</a> has changed on Notebook Gallery.  What do you want to do?"
+    }
+    const key = this.gallery_metadata['uuid'] + "changedDialog";
+    const promise = this.dialogPromiseCache.get(key);
+    if (promise) {
+      return promise;
+    } else {
+      const dialogPromise = showDialog({
+        title: title,
+        body: body,
+        buttons: buttons
+      }).then(
+        async (result) => {
+          this.dialogPromiseCache.delete(key);
+          console.log(result);
+          if(result.button.label=="Download and Replace"){
+            this.downloadReplace();
+          }else if(result.button.label=="Upload and Overwrite"){
+            this.triggerSave();
+            let results = await this.stageNotebook(gallery_url,this.gallery_metadata['link'],JSON.stringify(this.strip_output(this.context.model)));
+            if(results){
+              this.finishUpload(results,gallery_url.origin, false);
+            }
+          }else if(result.button.label=="View Diff"){
+            this.changedDialog(true);
+          }
+        },
+        error => {
+          // TODO: Use .finally() above when supported
+          this.dialogPromiseCache.delete(key);
+          throw error;
+        }
+      );
+      this.dialogPromiseCache.set(key, dialogPromise);
+      return dialogPromise;
+    }
+  }
 }
+
 
 function activate(app: JupyterFrontEnd, notebooks: INotebookTracker) {
   let buttons = new ButtonExtension();
