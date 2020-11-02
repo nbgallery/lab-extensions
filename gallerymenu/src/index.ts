@@ -78,9 +78,9 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
 
   //saveHandler: SaveHandler;
   createNew(panel: NotebookPanel, context: DocumentRegistry.IContext<INotebookModel>): IDisposable{
-    console.log("Creating button Group");
-    console.log(context);
-    console.log(panel);
+    // console.log("Creating button Group");
+    // console.log(context);
+    // console.log(panel);
     this.loaded = false;
     this.context = context;
     this.panel = panel;
@@ -100,7 +100,7 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
   setTracker(notebooks :INotebookTracker){
     this.notebooks=notebooks;
     this.notebooks.currentChanged.connect(()=>{
-      console.log("Changed Notebook Panel");
+      // console.log("Changed Notebook Panel");
       this.panelChanged();
     });
   }
@@ -123,6 +123,14 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
   }
 
   updateMetadata(response :stagingJson, notebook_base :string){
+    let linked = false;
+    let cloned = false;
+    if(this.gallery_metadata && this.gallery_metadata.link){
+      linked = true;
+    }
+    if(this.gallery_metadata && this.gallery_metadata.clone){
+      cloned = true;
+    }
     if(!this.gallery_metadata){
       this.gallery_metadata = {};
     }
@@ -131,23 +139,38 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
     this.gallery_metadata.filename = response.filename;
     if(response.link){
       this.gallery_metadata.uuid = response.link;
-      this.gallery_metadata.link = response.link;
     } else {
       this.gallery_metadata.uuid = response.clone;
-      this.gallery_metadata.clone = response.clone;
     }
+    // This block is because when uploading a change request to a notebook
+    // that you can't write to, it was still setting the link on the notebook
+    if(linked){
+      this.gallery_metadata.link = this.gallery_metadata.uuid;
+    }else if (cloned){
+      this.gallery_metadata.clone = this.gallery_metadata.uuid;
+    }else if(response.link){
+      this.gallery_metadata.link = this.gallery_metadata.uuid;
+    }else if(response.clone){
+      this.gallery_metadata.clone = this.gallery_metadata.uuid;
+    }
+
     this.context.model.metadata.set("gallery",this.gallery_metadata);
     this.triggerSave();
     this.toggleButtons();
   }
   finishUpload (response :stagingJson, notebook_base :string, change_request :boolean){
-    if(this.gallery_metadata && this.gallery_metadata["link"]){
+    if(this.gallery_metadata){
       if(change_request){
-        window.open(notebook_base + "/notebook/" + response.link+ "?staged=" + response.staging_id + "#CHANGE_REQ");
+        console.log("This is a change request");
+        window.open(notebook_base + "/notebook/" + this.gallery_metadata["uuid"] + "?staged=" + response.staging_id + "#CHANGE_REQ");
+      }else if(this.gallery_metadata["link"]){
+        console.log("This is a save");
+        window.open(notebook_base + "/notebook/" + this.gallery_metadata["link"] + "?staged=" + response.staging_id + "#UPDATE");
       }else{
-        window.open(notebook_base + "/notebook/" + response.link+ "?staged=" + response.staging_id + "#UPDATE");
+          console.error("Something Weird Happened");
       }
     }else{
+      console.log("This is an upload");
       window.open(notebook_base + "?staged=" + response.staging_id + "#STAGE");
     }
     this.updateMetadata(response,notebook_base);
@@ -192,6 +215,7 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
       }
     };
     let changereq_callback = async () => {
+      // console.log("Creating Change Request");
       this.triggerSave();
       let gallery_url = new URL(this.nbgallery_url);
       if(this.gallery_metadata && this.gallery_metadata['gallery_url'] && this.gallery_metadata['gallery_url'].length>0){
@@ -199,6 +223,7 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
       }
       let results = await this.stageNotebook(gallery_url,this.gallery_metadata['uuid'],JSON.stringify(this.strip_output(this.context.model)));
       if(results){
+        // console.log("Finishing Upload for Change Request");
         this.finishUpload(results,gallery_url.origin, true);
       }
       this.toggleButtons();
@@ -220,7 +245,7 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
       }
     };
     let link_callback = () => {
-      console.log("Link Button Pressed");
+      // console.log("Link Button Pressed");
       // Request a text
       InputDialog.getText({ title: 'Please enter the Notebook URL' }).then(url => {
         console.log('Notebook URL -  ' + url.value);
@@ -229,7 +254,7 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
       this.toggleButtons();
     };
     let unlink_callback = () => {
-      console.log("UnLink Button Pressed");
+      // console.log("UnLink Button Pressed");
       InputDialog.getBoolean({title: "Are you sure you want to unlink this notebook from NBGallery?",label: "Yes", value:true }).then(response => {
         if(response.value){
           context.model.metadata.delete("gallery");
@@ -411,18 +436,18 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
               });
               self.triggerSave();
               self.gallery_metadata=self.context.model.metadata.toJSON()["gallery"];
-              console.log("Gallery metadata after link")
-              console.log(self.gallery_metadata);
+              // console.log("Gallery metadata after link")
+              // console.log(self.gallery_metadata);
               self.toggleButtons();
             }
           });
         }else{
-          console.log("Notebook not found but 200 code *smh*");
-          console.log(uuid);
+          // console.log("Notebook not found but 200 code *smh*");
+          // console.log(uuid);
         }
       },
       error: function(){
-        console.log("Notebook not found");
+        console.error("Notebook not found");
       }
     });
   }
@@ -432,8 +457,6 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
     if (id.length>0){
       stage_url = stage_url + "&id=" + id;
     }
-    console.log("Notebook getting uploaded");
-    console.log(notebook_content);
     try {
       let results = await $.ajax({
         method: "POST",
@@ -448,7 +471,6 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
       });
       return results;
     } catch (error){
-      console.log("Staging Failed");
       return;
     }
   }
@@ -462,17 +484,17 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
         },
         xhrFields: {withCredentials: true}
       });
-      console.log(results);
+      // console.log(results);
       if(results["commit_id"] != this.gallery_metadata['commit'] ){
-        console.log("It Changed?");
-        console.log(this.gallery_metadata);
+        // console.log("It Changed?");
+        // console.log(this.gallery_metadata);
         return true;
       }else{
-        console.log("No Change");
+        // console.log("No Change");
         return false;
       }
     } catch (error){
-      console.log("Staging Failed");
+      // console.log("Staging Failed");
       return false;
     }
   }
@@ -570,9 +592,9 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
         async (result) => {
           this.dialogPromiseCache.delete(key);
           console.log(result);
-          if(result.button.label=="Download and Replace"){
+          if(result.button.label=="Download and Replace Local"){
             this.downloadReplace();
-          }else if(result.button.label=="Upload and Overwrite"){
+          }else if(result.button.label=="Upload and Replace Remote"){
             this.triggerSave();
             let results = await this.stageNotebook(gallery_url,this.gallery_metadata['link'],JSON.stringify(this.strip_output(this.context.model)));
             if(results){
@@ -580,6 +602,8 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
             }
           }else if(result.button.label=="View Diff"){
             this.changedDialog(true);
+          }else{
+
           }
         },
         error => {
@@ -600,8 +624,8 @@ function activate(app: JupyterFrontEnd, notebooks: INotebookTracker) {
   app.docRegistry.addWidgetExtension('Notebook', buttons);
   Promise.all([app.restored, notebooks.restored])
     .then(() => {
-      console.log("Setting Tracker");
-      setTimeout(function(){console.log("Timeout Over");buttons.setTracker(notebooks);buttons.panelChanged()},3000);
+      // console.log("Setting Tracker");
+      setTimeout(function(){buttons.setTracker(notebooks);buttons.panelChanged()},3000);
     });
 };
 
