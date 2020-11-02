@@ -40,8 +40,8 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@jupyterlab/application": "^2.0.0",
-    "@jupyterlab/settingregistry": "^2.0.0",
+    "@jupyterlab/application": ">2.0.0",
+    "@jupyterlab/settingregistry": ">2.0.0",
     "jquery":"^3.5.0"
   },
   "devDependencies": {
