@@ -1,7 +1,7 @@
 {
   "name": "@jupyterlab-nbgallery/environment-life",
   "version": "0.2.0",
-  "description": "Register NBGallery Environment",
+  "description": "Allow an expiration data to be displayed in the bottom right corner when operating in an environment where jupyter instances have a defined lifetime.",
   "keywords": [
     "jupyter",
     "jupyterlab",
@@ -39,8 +39,8 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@jupyterlab/application": "^2.0.0",
-    "@jupyterlab/settingregistry": "^2.0.0",
+    "@jupyterlab/application": "^2.0.0 || ^3.0.0",
+    "@jupyterlab/settingregistry": "^2.0.0 || ^3.0.0",
     "@types/jquery":"^3.5.0",
     "jquery":"^3.5.0"
   },
@@ -53,7 +53,8 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.18.3",
     "rimraf": "^3.0.0",
-    "typescript": "~3.7.5"
+    "typescript": "~3.7.5",
+    "glob":"latest"
   },
   "sideEffects": [
     "style/*.css"

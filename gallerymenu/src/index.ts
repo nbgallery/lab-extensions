@@ -165,9 +165,10 @@ class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel
         window.open(notebook_base + "/notebook/" + this.gallery_metadata["uuid"] + "?staged=" + response.staging_id + "#CHANGE_REQ");
       }else if(this.gallery_metadata["link"]){
         console.log("This is a save");
-        window.open(notebook_base + "/notebook/" + this.gallery_metadata["link"] + "?staged=" + response.staging_id + "#UPDATE");
+        window.open(notebook_base + "/notebook/" + response.link + "?staged=" + response.staging_id + "#UPDATE");
       }else{
-          console.error("Something Weird Happened");
+        console.log("This is a fork");
+        window.open(notebook_base + "?staged=" + response.staging_id + "#STAGE");
       }
     }else{
       console.log("This is an upload");

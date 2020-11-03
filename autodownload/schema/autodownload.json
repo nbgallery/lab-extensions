@@ -8,12 +8,6 @@
       "title": "Is auto download enabled?",
       "description": "Should Jupyter auto download notebooks from NBGallery on first start?",
       "default": false
-    },
-    "completed": {
-      "type": "boolean",
-      "title": "Has autodownloaded completed?",
-      "description": "",
-      "default": false
     }
   }
 }
