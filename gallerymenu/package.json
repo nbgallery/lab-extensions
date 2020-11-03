@@ -1,7 +1,7 @@
 {
   "name": "@jupyterlab-nbgallery/gallerymenu",
-  "version": "0.2.1",
-  "description": "Menu option to save to NBGALLERY",
+  "version": "0.2.0",
+  "description": "All the menu capabilities needed for saving/forking notebooks and submitting change request to Notebook Gallery",
   "keywords": [
     "jupyter",
     "jupyterlab",
@@ -40,8 +40,8 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@jupyterlab/application": ">2.0.0",
-    "@jupyterlab/notebook": ">2.0.0",
+    "@jupyterlab/application": "^2.0.0 || ^3.0.0",
+    "@jupyterlab/notebook": "^2.0.0 || ^3.0.0",
     "jquery":"^3.5.0",
     "fa-icons":"^0.2.0"
   },
@@ -55,7 +55,8 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.18.3",
     "rimraf": "^3.0.0",
-    "typescript": "~3.7.5"
+    "typescript": "~3.7.5",
+    "glob":"latest"
   },
   "sideEffects": [
     "style/*.css"
