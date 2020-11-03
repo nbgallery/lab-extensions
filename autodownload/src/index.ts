@@ -118,15 +118,10 @@ const extension: JupyterFrontEndPlugin<void> = {
     Promise.all([app.restored, settings.load('@jupyterlab-nbgallery/autodownload:autodownload')])
       .then(([, setting]) => {
         try {
-          let completed = setting.get('completed').composite as boolean;
-          if (!completed) {
-              autodownload(setting);
-              setting.set('completed',true);
-          }
+          autodownload(setting);
         } catch(reason) {
           console.error(`Problem downloading notebooks \n ${reason}`);
         }
-
        });
     }
 };

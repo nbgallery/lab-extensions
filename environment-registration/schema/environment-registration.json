@@ -6,19 +6,19 @@
     "registered": {
       "type": "boolean",
       "title": "Is registered?",
-      "description": "foo",
+      "description": "Has this instance of Jupyter been registered?",
       "default": false
     },
     "nbgallery_url": {
       "type": "string",
       "title": "URL User for registration",
-      "description": "foo",
+      "description": "Url for NBGallery",
       "default":"http://localhost:3000"
     },
     "nbgallery_client_name": {
       "type": "string",
       "title": "Client Name",
-      "description": "foo",
+      "description": "Name of the environment to display in NBGallery",
       "default": "JupyterLab"
     }
   }

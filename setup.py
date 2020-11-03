@@ -3,12 +3,32 @@ Setup Module to setup Python Handlers for the nbgallery extension.
 """
 import os
 from os.path import join as pjoin
+import distutils.cmd
 
 from jupyter_packaging import (
     create_cmdclass, install_npm, ensure_targets,
     combine_commands, ensure_python, get_version
 )
 import setuptools
+
+class CleanCommand(distutils.cmd.Command):
+    description = "Cleans out build and intermediate files"
+    user_options = []
+    def initialize_options(self):
+        pass
+    def finalize_options(self):
+        pass
+    def run(self):
+        cmd_list = dict(
+            labextensions="find . -name labextension -type d -print0 | xargs -0 rm -rf",
+            build="rm -rf build;",
+            dist="rm -rf dist;",
+            yarn="rm -rf node_modules && rm yarn.lock",
+            egginfo="rm -rf *.egg-info;"
+        )
+        for key, cmd in cmd_list.items():
+            os.system(cmd)
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -28,6 +48,7 @@ jstargets = [
     pjoin(HERE, "environment-life", "lib", "index.js"),
     pjoin(HERE, "environment-registration", "lib", "index.js"),
     pjoin(HERE, "autodownload", "lib", "index.js"),
+    pjoin(HERE, "gallerymenu", "lib", "index.js"),
 ]
 
 package_data_spec = {
@@ -51,6 +72,7 @@ cmdclass["jsdeps"] = combine_commands(
     install_npm(HERE, build_cmd="build-ext", npm=["jlpm"]),
     ensure_targets(jstargets),
 )
+cmdclass["clean"] = CleanCommand
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -66,7 +88,7 @@ setup_args = dict(
     cmdclass= cmdclass,
     packages=setuptools.find_packages(),
     install_requires=[
-        "jupyterlab~=2.0",
+        "jupyterlab>=2.0",
         "jupyter-nbgallery~=1.1.1",
     ],
     zip_safe=False,

@@ -2,7 +2,9 @@
 {
 "packages": [
   "environment-registration",
-  "environment-life"
+  "environment-life",
+  "autodownload",
+  "gallerymenu"
 ],
 "npmClient": "jlpm",
 "useWorkspaces": true,

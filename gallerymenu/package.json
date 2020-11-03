@@ -1,7 +1,7 @@
 {
-  "name": "@jupyterlab-nbgallery/environment-registration",
+  "name": "@jupyterlab-nbgallery/gallerymenu",
   "version": "0.2.0",
-  "description": "Register NBGallery Environment",
+  "description": "All the menu capabilities needed for saving/forking notebooks and submitting change request to Notebook Gallery",
   "keywords": [
     "jupyter",
     "jupyterlab",
@@ -41,12 +41,13 @@
   },
   "dependencies": {
     "@jupyterlab/application": "^2.0.0 || ^3.0.0",
-    "@jupyterlab/settingregistry": "^2.0.0 || ^3.0.0",
-    "@types/jquery": "^3.5.0",
-    "jquery": "^3.5.0"
+    "@jupyterlab/notebook": "^2.0.0 || ^3.0.0",
+    "jquery":"^3.5.0",
+    "fa-icons":"^0.2.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.21.0",
+    "@types/jquery":"^3.5.0",
     "@typescript-eslint/parser": "^2.21.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
@@ -61,7 +62,6 @@
     "style/*.css"
   ],
   "jupyterlab": {
-    "extension": true,
-    "schemaDir": "schema"
+    "extension": true
   }
 }
