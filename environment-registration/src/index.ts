@@ -50,7 +50,7 @@ const extension: JupyterFrontEndPlugin<void> = {
             data: {
                 name: nbgallery_client_name,
                 url: get_url(),
-                interface: "lab"
+                user_interface: "lab"
             },
             xhrFields: {withCredentials: true},
             success: function(data) {
