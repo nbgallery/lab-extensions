@@ -89,7 +89,7 @@ setup_args = dict(
     packages=setuptools.find_packages(),
     install_requires=[
         "jupyterlab>=2.0",
-        "jupyter-nbgallery~=1.1.1",
+        "jupyter-nbgallery~=2.0",
     ],
     zip_safe=False,
     include_package_data=True,
