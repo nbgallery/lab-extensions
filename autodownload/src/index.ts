@@ -84,7 +84,21 @@ const extension: JupyterFrontEndPlugin<void> = {
         cache: false,
         xhrFields: {withCredentials: true},
         success: function(response :object) {
-          // Folder already exists - do nothing
+          $.ajax({
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+            url: base + endpoint,
+            cache: false,
+            xhrFields: {withCredentials: true},
+            success: function(response :Array<any>) {
+              let i :any ;
+              for (i in response) {
+                var metadata = response[i];
+                var url = base + '/notebooks/' + metadata.uuid + '/download?clickstream=false';
+                fetch_notebook(url, folder, metadata.title.replace(/\//g,'⁄'));
+              }
+            }
+          });
         },
         error: function(response :object){
           // Folder doesn't exist - download notebooks from gallery
