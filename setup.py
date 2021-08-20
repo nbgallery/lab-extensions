@@ -49,6 +49,7 @@ jstargets = [
     pjoin(HERE, "environment-registration", "lib", "index.js"),
     pjoin(HERE, "autodownload", "lib", "index.js"),
     pjoin(HERE, "gallerymenu", "lib", "index.js"),
+    pjoin(HERE, "instrumentation", "lib", "index.js"),
 ]
 
 package_data_spec = {
@@ -88,7 +89,7 @@ setup_args = dict(
     cmdclass= cmdclass,
     packages=setuptools.find_packages(),
     install_requires=[
-        "jupyterlab>=2.0",
+        "jupyterlab>=3.1.0",
         "jupyter-nbgallery~=2.0",
     ],
     zip_safe=False,

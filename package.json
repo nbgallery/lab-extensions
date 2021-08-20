@@ -24,7 +24,8 @@
       "environment-registration",
       "environment-life",
       "autodownload",
-      "gallerymenu"
+      "gallerymenu",
+      "instrumentation"
     ]
   },
   "devDependencies": {
