@@ -65,39 +65,63 @@ const extension: JupyterFrontEndPlugin<void> = {
     settings: ISettingRegistry
   ) => {
 
-
     let tracker: CellTracking = {};
-    //let cells = new Object();
-    /*let nbgallery_url = "";
-    let enabled = true;
-    const cellExecutionMetadataTable: LRU<
-      string,
-      ICellExecutionMetadata
-    > = new LRU({
-      max: 500 * 5 // to save 500 notebooks x 5 cells
-    });*/
+    let enabled = false;
+
+    function get_url(){
+        return window.location.href.replace(/\/lab.*$/g,"/");
+    }
+
+    function instrumentation(setting: ISettingRegistry.ISettings){
+      $.ajax({
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        url: get_url() + 'jupyterlab_nbgallery/instrumentation',
+        cache: false,
+        xhrFields: {withCredentials: true},
+        success: function(environment) {
+          if (environment['NBGALLERY_ENABLE_INSTRUMENTATION'] == 1 || (setting.get('enabled').composite as boolean)){
+            setting.set("enabled",true);
+            enabled = true;
+          }else{
+            enabled = false;
+          }
+        }
+      });
+    }
+
     NotebookActions.executionScheduled.connect((_, args) => {
-      let cell: Cell;
-      let notebook: Notebook;
-      notebook = args["notebook"];
-      cell = args ["cell"];
-      const started = new Date();
-      tracker[cell.id] = new Object() as executionTracking;
-      tracker[cell.id].startTime = started.getTime();
-      tracker[cell.id].cellIndex = notebook.activeCellIndex;
-      console.log(cell);
+      if(enabled){
+        let cell: Cell;
+        let notebook: Notebook;
+        notebook = args["notebook"];
+        cell = args ["cell"];
+        const started = new Date();
+        tracker[cell.id] = new Object() as executionTracking;
+        tracker[cell.id].startTime = started.getTime();
+        tracker[cell.id].cellIndex = notebook.activeCellIndex;
+        console.log(cell);
+      }
     });
 
     NotebookActions.executed.connect((_, args) => {
       const { cell, notebook, success } = args;
-      if (cell instanceof CodeCell) {
+      if (enabled && cell instanceof CodeCell) {
         const finished = new Date();
         console.log("Post execution");
         transmit_execution(notebook, cell, success, (finished.getTime() - tracker[cell.id].startTime) );
       }
     });
-
+    Promise.all([app.restored, settings.load('@jupyterlab-nbgallery/instrumentation:instrumentation')])
+      .then(([, setting]) => {
+        try {
+          instrumentation(setting);
+        } catch(reason) {
+          console.error(`Problem initializing instrumentation \n ${reason}`);
+        }
+       });
   }
 };
+
 
 export default extension;
