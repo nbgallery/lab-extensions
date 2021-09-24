@@ -25,7 +25,8 @@
       "environment-life",
       "autodownload",
       "gallerymenu",
-      "instrumentation"
+      "instrumentation",
+      "inject-uuid"
     ]
   },
   "devDependencies": {
