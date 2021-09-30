@@ -50,6 +50,7 @@ jstargets = [
     pjoin(HERE, "autodownload", "lib", "index.js"),
     pjoin(HERE, "gallerymenu", "lib", "index.js"),
     pjoin(HERE, "instrumentation", "lib", "index.js"),
+    pjoin(HERE, "inject-uuid", "lib", "index.js"),
 ]
 
 package_data_spec = {
