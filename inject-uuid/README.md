@@ -1,10 +1,8 @@
-# Environment Life
-For environments where the Jupyter container a user is using is deleted on a
-regular basis, you can set an environment variable to have the expiration date
-and time displayed to the user in the status bar at the bottom of Juptyer Lab.
-Simply set NBGALLERY_CREATION_TIME to a UTC timestamp in the following format:
+# Inject UUID
+If the user is running a notebook loaded from NBGallery, when initially opened
+this plugin will inject the NBGallery Notebook UUID and the Commit ID of the revision
+being run into the kernel's environment.  
 
-export NBGALLERY_TERMINATION_TIME=`date --date='14 days' +'%Y-%m-%d %H:%M:%S'`
+This currently works for Python and Ruby only.
 
-You can pass this in to the container or have a startup script mounted in
-/usr/local/bin/start-notebook.d/ which sets this environment variable.
+The values will be in 'NBGALLERY_UUID' and 'NBGALLERY_GIT_COMMIT_ID'
