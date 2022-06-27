@@ -7,6 +7,10 @@ import {
    ISettingRegistry
 } from '@jupyterlab/settingregistry';
 
+import {
+  PageConfig
+} from '@jupyterlab/coreutils';
+
 import { NotebookActions, Notebook } from '@jupyterlab/notebook';
 import { Cell, CodeCell } from '@jupyterlab/cells';
 import {Md5} from 'ts-md5/dist/md5'
@@ -69,7 +73,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     let enabled = false;
 
     function get_url(){
-        return window.location.href.replace(/\/lab.*$/g,"/");
+        return PageConfig.getBaseUrl();
     }
 
     function instrumentation(setting: ISettingRegistry.ISettings){

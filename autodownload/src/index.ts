@@ -7,6 +7,10 @@ import {
   ISettingRegistry
 } from '@jupyterlab/settingregistry';
 
+import {
+  PageConfig
+} from '@jupyterlab/coreutils';
+
 import $ from 'jquery';
 
 /**
@@ -26,7 +30,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     let config_enabled = false;
 
     function get_url(){
-        return window.location.href.replace(/\/lab.*$/g,"/");
+        return PageConfig.getBaseUrl();
     }
     function autodownload(setting: ISettingRegistry.ISettings){
       $.ajax({
@@ -60,16 +64,13 @@ const extension: JupyterFrontEndPlugin<void> = {
       });
     }
     async function save_notebook(folder :string, name: string, notebook: string){
-      console.log("Time to save the notebook");
       $.ajax({
         url: get_url() + 'post/' + folder + '/' + encodeURIComponent(name) + '.ipynb',
         type: 'POST',
         success: function() {
-          console.log('Successfully downloaded ' + name);
         },
         error: function(response) {
-          console.log('Failed upload: ' + name);
-          console.log(response);
+          console.error('Failed upload: ' + name);
         },
         data: JSON.stringify({
           type: 'notebook',

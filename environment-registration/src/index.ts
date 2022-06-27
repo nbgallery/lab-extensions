@@ -9,6 +9,10 @@ import {
 
 import { requestAPI } from './nbgallery';
 
+import {
+  PageConfig
+} from '@jupyterlab/coreutils';
+
 import $ from 'jquery';
 
 /**
@@ -26,7 +30,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     let nbgallery_client_name = "";
 
     function get_url(){
-        return window.location.href.replace(/\/lab.*$/g,"/");
+        return PageConfig.getBaseUrl();
     }
     function loadSetting(setting: ISettingRegistry.ISettings): void {
       // Read the settings and convert to the correct type
