@@ -63,7 +63,7 @@ data_files_spec = [
     ("share/jupyter/labextensions/@jupyterlab-nbgallery", lab_path, "autodownload/**"),
     ("share/jupyter/labextensions/@jupyterlab-nbgallery", lab_path, "environment-life/**"),
     ("share/jupyter/labextensions/@jupyterlab-nbgallery", lab_path, "environment-registration/**"),
-    ("share/jupyter/labextensions/@jupyterlab-nbgallery", lab_path, "environment-gallerymenu/**"),
+    ("share/jupyter/labextensions/@jupyterlab-nbgallery", lab_path, "gallerymenu/**"),
     ("share/jupyter/labextensions/@jupyterlab-nbgallery", lab_path, "inject-uuid/**"),
     ("share/jupyter/labextensions/@jupyterlab-nbgallery", lab_path, "instrumentation/**"),
     ("etc/jupyter/jupyter_notebook_config.d",
