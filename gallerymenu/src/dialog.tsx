@@ -4,13 +4,13 @@ import {
 import * as React from 'react';
 
 export class DialogWidget extends ReactWidget {
-  constructor(){
+  constructor() {
     super();
     this.addClass('jp-ReactWidget');
   }
-  content :string;
-  render() :JSX.Element {
-    return (<div dangerouslySetInnerHTML={{__html: this.content}}></div>)
+  content: string;
+  render(): JSX.Element {
+    return (<div dangerouslySetInnerHTML={{ __html: this.content }}></div>)
   }
 
 }
