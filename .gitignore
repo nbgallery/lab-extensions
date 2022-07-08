@@ -10,3 +10,4 @@ MANIFEST
 */lib
 *.egg-info
 build
+*/__pycache__/
