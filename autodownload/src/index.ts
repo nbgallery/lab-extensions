@@ -7,6 +7,10 @@ import {
   ISettingRegistry
 } from '@jupyterlab/settingregistry';
 
+import {
+  PageConfig
+} from '@jupyterlab/coreutils';
+
 import $ from 'jquery';
 
 /**
@@ -17,7 +21,7 @@ const extension: JupyterFrontEndPlugin<void> = {
   autoStart: true,
   requires: [ISettingRegistry],
   activate: async (app: JupyterFrontEnd,
-                   settings: ISettingRegistry
+    settings: ISettingRegistry
   ) => {
     //let enabled = true;
     //let completed = false;
@@ -25,24 +29,24 @@ const extension: JupyterFrontEndPlugin<void> = {
     let env_enabled = 0;
     let config_enabled = false;
 
-    function get_url(){
-        return window.location.href.replace(/\/lab.*$/g,"/");
+    function get_url() {
+      return PageConfig.getBaseUrl();
     }
-    function autodownload(setting: ISettingRegistry.ISettings){
+    function autodownload(setting: ISettingRegistry.ISettings) {
       $.ajax({
         method: 'GET',
         headers: { Accept: 'application/json' },
         url: get_url() + 'jupyterlab_nbgallery/environment',
         cache: false,
-        xhrFields: {withCredentials: true},
-        success: function(environment) {
+        xhrFields: { withCredentials: true },
+        success: function (environment) {
           nbgallery_url = environment['NBGALLERY_URL'];
           env_enabled = environment['NBGALLERY_ENABLE_AUTODOWNLOAD'];
           config_enabled = setting.get('enabled').composite as boolean;
-          console.log("Auto Downloading Notebooks");
-          if(env_enabled == 1 || config_enabled){
-            download_notebooks("Starred",nbgallery_url,"/notebooks/stars")
-            download_notebooks("Recently Executed",nbgallery_url,"/notebooks/recently_executed");
+          console.info("Auto Downloading Notebooks");
+          if (env_enabled == 1 || config_enabled) {
+            download_notebooks("Starred", nbgallery_url, "/notebooks/stars")
+            download_notebooks("Recently Executed", nbgallery_url, "/notebooks/recently_executed");
           }
         }
       });
@@ -53,23 +57,20 @@ const extension: JupyterFrontEndPlugin<void> = {
         headers: { Accept: 'application/json' },
         url: url,
         cache: false,
-        xhrFields: {withCredentials: true},
-        success: function(notebook) {
+        xhrFields: { withCredentials: true },
+        success: function (notebook) {
           save_notebook(folder, name, notebook);
         }
       });
     }
-    async function save_notebook(folder :string, name: string, notebook: string){
-      console.log("Time to save the notebook");
+    async function save_notebook(folder: string, name: string, notebook: string) {
       $.ajax({
         url: get_url() + 'post/' + folder + '/' + encodeURIComponent(name) + '.ipynb',
         type: 'POST',
-        success: function() {
-          console.log('Successfully downloaded ' + name);
+        success: function () {
         },
-        error: function(response) {
-          console.log('Failed upload: ' + name);
-          console.log(response);
+        error: function (response) {
+          console.error('Failed upload: ' + name);
         },
         data: JSON.stringify({
           type: 'notebook',
@@ -77,36 +78,36 @@ const extension: JupyterFrontEndPlugin<void> = {
         })
       });
     }
-    function download_notebooks(folder :string, base :string, endpoint :string){
+    function download_notebooks(folder: string, base: string, endpoint: string) {
       $.ajax({
         method: 'GET',
         url: get_url() + 'api/contents/' + encodeURIComponent(folder),
         cache: false,
-        xhrFields: {withCredentials: true},
-        success: function(response :object) {
+        xhrFields: { withCredentials: true },
+        success: function (response: object) {
           // Folder already exists - do nothing
         },
-        error: function(response :object){
+        error: function (response: object) {
           // Folder doesn't exist - download notebooks from gallery
-          console.log('Downloading notebooks to ' + folder);
+          console.info('Downloading notebooks to ' + folder);
           $.ajax({
             method: 'POST',
             url: get_url() + 'post/' + encodeURIComponent(folder) + '',
             data: JSON.stringify({ type: 'directory' }),
             cache: false,
-            success: function(response :object) {
+            success: function (response: object) {
               $.ajax({
                 method: 'GET',
                 headers: { Accept: 'application/json' },
                 url: base + endpoint,
                 cache: false,
-                xhrFields: {withCredentials: true},
-                success: function(response :Array<any>) {
-                  let i :any ;
+                xhrFields: { withCredentials: true },
+                success: function (response: Array<any>) {
+                  let i: any;
                   for (i in response) {
                     var metadata = response[i];
                     var url = base + '/notebooks/' + metadata.uuid + '/download?clickstream=false';
-                    fetch_notebook(url, folder, metadata.title.replace(/\//g,'⁄'));
+                    fetch_notebook(url, folder, metadata.title.replace(/\//g, '⁄'));
                   }
                 }
               });
@@ -119,11 +120,11 @@ const extension: JupyterFrontEndPlugin<void> = {
       .then(([, setting]) => {
         try {
           autodownload(setting);
-        } catch(reason) {
+        } catch (reason) {
           console.error(`Problem downloading notebooks \n ${reason}`);
         }
-       });
-    }
+      });
+  }
 };
 
 export default extension;

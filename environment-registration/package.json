@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlab-nbgallery/environment-registration",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Register NBGallery Environment",
   "keywords": [
     "jupyter",
@@ -26,42 +26,50 @@
     "url": "https://github.com/nbgallery/lab-extensions"
   },
   "scripts": {
-    "build": "jlpm run build:lib",
-    "build:labextension": "mkdir -p ../labextension && mkdir -p labextension && cd labextension && npm pack .. && cp *.tgz ../../labextension/",
+    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
+    "build:prod": "jlpm run clean && jlpm run build:lib && jlpm run build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
     "build:lib":"tsc",
-    "build:all": "jlpm run build:labextension",
+    "build:all": "jlpm run build:prod",
+    "build:ext": "jlpm run build:prod",
     "clean": "jlpm run clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
-    "clean:labextension": "rimraf labextension",
-    "install-ext": "jupyter labextension install . --no-build",
-    "prepare": "jlpm run clean && jlpm run build",
+    "clean:labextension": "rimraf jupyterlab_nbgallery/labextension",
+    "clean:all": "rimrafjlpm run clean:lib && jlpm run clean:labextension",
+    "install-ext": "jlpm run build",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
-    "watch": "tsc -w"
+    "watch:src": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyterlab/application": "^2.0.0 || ^3.0.0",
-    "@jupyterlab/settingregistry": "^2.0.0 || ^3.0.0",
-    "@types/jquery": "^3.5.0",
-    "jquery": "^3.5.0"
+    "@jupyterlab/application": "^3.1.0",
+    "@jupyterlab/settingregistry": "^3.1.0",
+    "@jupyterlab/coreutils": "^5.2.0",
+    "jquery":"^3.5.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.21.0",
-    "@typescript-eslint/parser": "^2.21.0",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.10.0",
+    "@jupyterlab/builder":"^3.3.2",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
+    "@types/jquery":"^3.5.0",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-jsdoc": "^22.0.0",
-    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.18.3",
-    "rimraf": "^3.0.0",
-    "typescript": "~3.7.5",
-    "glob":"latest"
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "typescript": "~4.1.3"
   },
   "sideEffects": [
     "style/*.css"
   ],
   "jupyterlab": {
     "extension": true,
-    "schemaDir": "schema"
+    "schemaDir": "schema",
+    "outputDir": "../labextension/environment-registration"
   }
 }

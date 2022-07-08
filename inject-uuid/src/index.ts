@@ -23,19 +23,19 @@ const extension: JupyterFrontEndPlugin<void> = {
 };
 function injectUUID(panel: NotebookPanel): void {
   panel.sessionContext.ready.then(() => {
-      let gallery_metadata :any;
-      gallery_metadata = panel.model.metadata.toJSON()["gallery"];
-      if(gallery_metadata && gallery_metadata['uuid']){
-        let kernel = panel.sessionContext.session.kernel;
-        console.log(kernel);
-        if(kernel.name == "python" || kernel.name == "python3"){
-          kernel.requestExecute({code:"import os; os.environ['NBGALLERY_UUID']='"+gallery_metadata['uuid']+"'; os.environ['NBGALLERY_GIT_COMMIT_ID']='"+gallery_metadata['git_commit_id']+"';",silent: true,stop_on_error: true});
-        }
-        if(kernel.name == "ruby"){
-          kernel.requestExecute({code:"ENV['NBGALLERY_UUID']='"+gallery_metadata['uuid']+"'",silent: true,stop_on_error: true});
-          kernel.requestExecute({code:"ENV['NBGALLERY_GIT_COMMIT_ID']='"+gallery_metadata['git_commit_id']+"'",silent: true,stop_on_error: true});
-        }
+    let gallery_metadata: any;
+    gallery_metadata = panel.model.metadata.toJSON()["gallery"];
+    if (gallery_metadata && gallery_metadata['uuid']) {
+      let kernel = panel.sessionContext.session.kernel;
+      console.log(kernel);
+      if (kernel.name == "python" || kernel.name == "python3") {
+        kernel.requestExecute({ code: "import os; os.environ['NBGALLERY_UUID']='" + gallery_metadata['uuid'] + "'; os.environ['NBGALLERY_GIT_COMMIT_ID']='" + gallery_metadata['git_commit_id'] + "';", silent: true, stop_on_error: true });
       }
+      if (kernel.name == "ruby") {
+        kernel.requestExecute({ code: "ENV['NBGALLERY_UUID']='" + gallery_metadata['uuid'] + "'", silent: true, stop_on_error: true });
+        kernel.requestExecute({ code: "ENV['NBGALLERY_GIT_COMMIT_ID']='" + gallery_metadata['git_commit_id'] + "'", silent: true, stop_on_error: true });
+      }
+    }
   });
 }
 
