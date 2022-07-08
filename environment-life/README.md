@@ -1,4 +1,5 @@
 # Environment Life
+
 For environments where the Jupyter container a user is using is deleted on a
 regular basis, you can set an environment variable to have the expiration date
 and time displayed to the user in the status bar at the bottom of Juptyer Lab.
