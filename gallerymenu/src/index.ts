@@ -80,7 +80,7 @@ class galleryMenu {
       xhrFields: { withCredentials: true },
       success: function (environment) {
         if (self.gallery_url == "") {
-          self.gallery_url = environment['gallery_url'];
+          self.gallery_url = environment['NBGALLERY_URL'];
         }
       }
     });
@@ -486,10 +486,10 @@ class galleryMenu {
           )
         );
       } else {
-        return new URL(URLExt.join(this.gallery_url));
+        return new URL(this.gallery_url);
       }
     } else {
-      return new URL(URLExt.join(this.gallery_url));
+      return new URL(this.gallery_url);
     }
   }
 
