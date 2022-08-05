@@ -425,8 +425,8 @@ class galleryMenu {
   currentNotebook(): Notebook {
     return this.notebooks.currentWidget.content;
   }
-  hasCurrentNotebook() {
-    return (this.notebooks.currentWidget === this.app.shell.currentWidget && this.notebooks.currentWidget.content && this.notebooks.currentWidget.content.model && this.notebooks.currentWidget.content.model.cells)
+  hasCurrentNotebook(): boolean {
+    return (this.notebooks.currentWidget === this.app.shell.currentWidget && this.notebooks.currentWidget.content != null && this.notebooks.currentWidget.content.model != null && this.notebooks.currentWidget.content.model.cells != null)
   }
   hasLinkedNotebook() {
     if (this.hasCurrentNotebook()) {
@@ -510,10 +510,10 @@ class galleryMenu {
     commands.addCommand("gallery-upload", {
       label: "Upload to the Gallery",
       isEnabled: () => {
-        return (this.gallery_url != "" && !this.hasUUID());
+        return (this.gallery_url != "" && !this.hasUUID() && this.hasCurrentNotebook());
       },
       isVisible: () => {
-        return (this.gallery_url != "" && !this.hasUUID());
+        return (this.gallery_url != "" && !this.hasUUID() && this.hasCurrentNotebook());
       },
       execute: () => {
         this.uploadCallback();
@@ -540,6 +540,8 @@ class galleryMenu {
         return this.hasUUID();
       },
       execute: () => {
+        let notebook = this.currentNotebook();
+        this.setGalleryMetadata(notebook,{});
         this.uploadCallback();
       }
     });
@@ -582,10 +584,10 @@ class galleryMenu {
     commands.addCommand("gallery-link", {
       label: "Link to Notebook in Gallery",
       isEnabled: () => {
-        return !this.hasUUID();
+        return !this.hasUUID() && this.hasCurrentNotebook();
       },
       isVisible: () => {
-        return !this.hasUUID();
+        return !this.hasUUID() && this.hasCurrentNotebook();
       },
       execute: () => {
         this.linkCallback();
