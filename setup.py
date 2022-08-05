@@ -7,7 +7,7 @@ import distutils.cmd
 
 from jupyter_packaging import (
     create_cmdclass, install_npm, ensure_targets,
-    combine_commands, ensure_python, get_version
+    combine_commands, get_version
 )
 import setuptools
 
@@ -40,7 +40,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 name = "jupyterlab_nbgallery"
 
 # Ensure a valid python version
-ensure_python(">=3.5")
+setuptools.python_requires=">=3.5"
 
 # Get the version
 version = get_version(pjoin(name, "_version.py"))
