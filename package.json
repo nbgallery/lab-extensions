@@ -26,7 +26,8 @@
       "autodownload",
       "gallerymenu",
       "instrumentation",
-      "inject-uuid"
+      "inject-uuid",
+      "userpreferences"
     ]
   },
   "devDependencies": {

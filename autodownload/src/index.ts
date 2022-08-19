@@ -17,7 +17,7 @@ import $ from 'jquery';
  * Initialization data for the auto download extension
  */
 const extension: JupyterFrontEndPlugin<void> = {
-  id: '@nbgallery/autodownload:autodownload',
+  id: '@jupyterlab-nbgallery/autodownload',
   autoStart: true,
   requires: [ISettingRegistry],
   activate: async (app: JupyterFrontEnd,

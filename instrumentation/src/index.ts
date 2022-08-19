@@ -13,7 +13,7 @@ import {
 
 import { NotebookActions, Notebook } from '@jupyterlab/notebook';
 import { Cell, CodeCell } from '@jupyterlab/cells';
-import { Md5 } from 'ts-md5/dist/md5'
+import { Md5 } from 'ts-md5'
 import $ from 'jquery';
 
 interface executionTracking {
@@ -62,7 +62,7 @@ function transmit_execution(notebook: Notebook, cell: Cell, success: boolean, ru
  * Initialization data for the hello-world extension.
  */
 const extension: JupyterFrontEndPlugin<void> = {
-  id: 'instrumentation',
+  id: '@juptyerlab-nbgallery/instrumentation',
   autoStart: true,
   requires: [ISettingRegistry],
   activate: async (app: JupyterFrontEnd,

@@ -1,7 +1,7 @@
 {
-  "name": "@jupyterlab-nbgallery/environment-life",
-  "version": "0.2.1",
-  "description": "Allow an expiration data to be displayed in the bottom right corner when operating in an environment where jupyter instances have a defined lifetime.",
+  "name": "@jupyterlab-nbgallery/userpreferences",
+  "version": "1.0.0",
+  "description": "All the menu capabilities needed for saving/forking notebooks and submitting change request to Notebook Gallery",
   "keywords": [
     "jupyter",
     "jupyterlab",
@@ -15,7 +15,8 @@
   "author": "Team@NBG",
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
-    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
+    "schema/**/*.json"
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -46,6 +47,9 @@
   "dependencies": {
     "@jupyterlab/application": "^3.1.0",
     "@jupyterlab/settingregistry": "^3.1.0",
+    "@jupyterlab/notebook": "^3.1.0",
+    "@jupyterlab/mainmenu": "^3.1.0",
+    "fa-icons": "^0.2.0",
     "jquery":"^3.5.0"
   },
   "devDependencies": {
@@ -68,6 +72,6 @@
   "jupyterlab": {
     "extension": true,
     "schemaDir": "schema",
-    "outputDir": "../labextension/environment-life"
+    "outputDir": "../labextension/userpreferences"
   }
 }

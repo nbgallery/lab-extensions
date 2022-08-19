@@ -13,7 +13,7 @@ import { requestAPI } from './server-api';
  * Initialization data for the environment-life extension.
  */
 const extension: JupyterFrontEndPlugin<void> = {
-  id: '@nbgallery/environment-life:environment-life',
+  id: '@jupyterlab-nbgallery/environment-life',
   autoStart: true,
   requires: [IStatusBar],
   activate: async (app: JupyterFrontEnd,
