@@ -27,7 +27,7 @@ import {
 import $ from 'jquery';
 
 const plugin: JupyterFrontEndPlugin<void> = {
-  id: "@jupyterlab-gallery/userpreferences",
+  id: "@jupyterlab-nbgallery/userpreferences",
   autoStart: true,
   requires: [IMainMenu],
   activate

@@ -62,7 +62,7 @@ function transmit_execution(notebook: Notebook, cell: Cell, success: boolean, ru
  * Initialization data for the hello-world extension.
  */
 const extension: JupyterFrontEndPlugin<void> = {
-  id: 'instrumentation',
+  id: '@juptyerlab-nbgallery/instrumentation',
   autoStart: true,
   requires: [ISettingRegistry],
   activate: async (app: JupyterFrontEnd,

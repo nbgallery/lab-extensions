@@ -19,7 +19,7 @@ import $ from 'jquery';
  * Initialization data for the hello-world extension.
  */
 const extension: JupyterFrontEndPlugin<void> = {
-  id: 'environment-registration',
+  id: '@jupyterlab-nbgallery/environment-registration',
   autoStart: true,
   requires: [ISettingRegistry],
   activate: async (app: JupyterFrontEnd,

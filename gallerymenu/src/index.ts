@@ -36,7 +36,7 @@ import { DialogWidget } from './dialog'
 import $ from 'jquery';
 
 const plugin: JupyterFrontEndPlugin<void> = {
-  id: "@jupyterlab-gallery/gallerymenu",
+  id: "@jupyterlab-nbgallery/gallerymenu",
   autoStart: true,
   requires: [IMainMenu, INotebookTracker],
   activate
