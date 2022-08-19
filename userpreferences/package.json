@@ -1,6 +1,6 @@
 {
-  "name": "@jupyterlab-nbgallery/gallerymenu",
-  "version": "1.0.3",
+  "name": "@jupyterlab-nbgallery/userpreferences",
+  "version": "1.0.0",
   "description": "All the menu capabilities needed for saving/forking notebooks and submitting change request to Notebook Gallery",
   "keywords": [
     "jupyter",
@@ -72,6 +72,6 @@
   "jupyterlab": {
     "extension": true,
     "schemaDir": "schema",
-    "outputDir": "../labextension/gallerymenu"
+    "outputDir": "../labextension/userpreferences"
   }
 }

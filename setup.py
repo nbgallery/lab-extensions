@@ -55,6 +55,7 @@ jstargets = [
     pjoin(HERE, "gallerymenu", "lib", "index.js"),
     pjoin(HERE, "instrumentation", "lib", "index.js"),
     pjoin(HERE, "inject-uuid", "lib", "index.js"),
+    pjoin(HERE, "userpreferences", "lib", "index.js"),
 ]
 
 package_data_spec = {
@@ -73,6 +74,8 @@ data_files_spec = [
     ("share/jupyter/labextensions/@jupyterlab-nbgallery", lab_path, "inject-uuid/**"),
     ("share/jupyter/labextensions/@jupyterlab-nbgallery",
      lab_path, "instrumentation/**"),
+    ("share/jupyter/labextensions/@jupyterlab-nbgallery",
+     lab_path, "userpreferences/**"),
     ("etc/jupyter/jupyter_notebook_config.d",
      "jupyter-config", "jupyterlab_nbgallery.json"),
 ]

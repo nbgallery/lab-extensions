@@ -15,7 +15,8 @@ import {
 } from '@jupyterlab/apputils';
 
 import {
-  Menu
+  Menu,
+  MenuBar
 } from '@lumino/widgets'
 
 import {
@@ -541,7 +542,7 @@ class galleryMenu {
       },
       execute: () => {
         let notebook = this.currentNotebook();
-        this.setGalleryMetadata(notebook,{});
+        this.setGalleryMetadata(notebook, {});
         this.uploadCallback();
       }
     });
@@ -593,8 +594,20 @@ class galleryMenu {
         this.linkCallback();
       }
     });
-    let menu = new Menu({ commands });
-    menu.title.label = "Gallery"
+    var menu: Menu;
+    menu = null;
+    var menubar = this.mainMenu as unknown as MenuBar;
+    var menus = menubar.menus;
+    for (let i = 0; i < menus.length; i++) {
+      if (menus[i].id == "jupyterlab_nbgallery-gallery") {
+        menu = menus[i]
+      }
+    }
+    if (menu == null) {
+      menu = new Menu({ commands });
+      menu.title.label = "Gallery";
+      menu.id = "jupyterlab_nbgallery-gallery";
+    }
     menu.addItem({ command: "gallery-upload" });
     menu.addItem({ command: "gallery-save" });
     menu.addItem({ command: "gallery-changereq" });

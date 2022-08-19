@@ -1,0 +1,3 @@
+# NBGALLERY Gallery Menu Extension
+
+This extension is used to provide the NBGallery integration to associate, save, fork, and submit change requests to NBGallery.  The option savailable to the user are dependent on the metadata contained within the notebook.  If the gallery metadata contains a `link` element, this implies the user has write permissions to the notebook and will enable the "Save Changes to Gallery" menu option.  If the gallery metadata contains the `uuid` element, the "Submit Change Request", "Upload as a New Notebook (Fork)", "Unlink from Gallery", "Check for Changes" and "Open in the Gallery" options are possible.  If there isn"t any `uuid`, "Upload to the Gallery" and "Link to Notebook in Gallery" are available.

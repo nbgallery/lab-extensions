@@ -1,0 +1,23 @@
+.nbgallery-button{
+    background-color: #E5712E !important;
+}
+.nbgallery-button .bp3-button-text{
+    color:#333 !important;    
+}
+.nbgallery-link{
+    border-radius:1em !important;
+    width: 2em !important;
+    letter-spacing: -.1em !important;
+}
+.nbgallery-link .jp-ToolbarButtonComponent-label{
+    font-size:1.5em !important;
+    margin-left: -.1em !important;
+}
+[data-jp-theme-light="false"]
+.nbgallery-button{
+    background-color: #E5712E !important;
+}
+[data-jp-theme-light="false"]
+.nbgallery-button .bp3-button-text{
+    color:#fff !important;    
+}

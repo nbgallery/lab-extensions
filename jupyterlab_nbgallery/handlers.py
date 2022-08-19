@@ -1,7 +1,5 @@
 import os
 import json
-import tarfile
-import io
 import shutil
 import json
 from pathlib import Path
@@ -11,31 +9,33 @@ from notebook.utils import url_path_join
 
 import tornado
 
+
 class PreferencesHandler(APIHandler):
-    # This handler will allow getting and putting of user preferences from the user's settings
     @tornado.web.authenticated
     def get(self):
         user_settings = {}
-        for subdir, dirs, files in os.walk("/home/"+os.getenv("NB_USER")+"/.jupyter/lab/user-settings"):
+        for subdir, dirs, files in os.walk("/home/" + os.getenv("NB_USER") + "/.jupyter/lab/user-settings"):
             for file in files:
-                with open(os.path.join(subdir,file),"r")  as f:
-                    user_settings[os.path.join(subdir,file)]=f.read()
+                with open(os.path.join(subdir, file), "r") as f:
+                    user_settings[os.path.join(subdir, file)] = f.read()
         self.write(json.dumps(user_settings))
 
     @tornado.web.authenticated
     def delete(self):
-        shutil.rmtree("/home/"+os.getenv("NB_USER")+"/.jupyter/lab/user-settings/*")
-        self.finish()
+        shutil.rmtree("/home/" + os.getenv("NB_USER") + "/.jupyter/lab/user-settings")
+        self.finish(json.dumps(
+            {"message": "Settings Updated", "success": True}))
 
     @tornado.web.authenticated
     def post(self):
-        user_settings = json.reads(self.request.body)
-        for filename,contents in user_settings.items():
+        user_settings = tornado.escape.json_decode(self.request.body)
+        for filename, contents in user_settings.items():
             if os.path.abspath(filename).startswith("/home/"+os.getenv("NB_USER")+"/.jupyter/lab/user-settings/"):
                 output_file = Path(filename)
-                output_file.parent.mkdir(exists_ok=True, parents=True)
+                output_file.parent.mkdir(exist_ok=True, parents=True)
                 output_file.write_text(contents)
-        self.finish()
+        self.finish(json.dumps(
+            {"message": "Settings Updated", "success": True}))
 
 
 class EnvironmentHandler(APIHandler):
