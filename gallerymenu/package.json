@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlab-nbgallery/gallerymenu",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "All the menu capabilities needed for saving/forking notebooks and submitting change request to Notebook Gallery",
   "keywords": [
     "jupyter",
@@ -45,15 +45,15 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyterlab/application": "^3.1.0",
-    "@jupyterlab/settingregistry": "^3.1.0",
-    "@jupyterlab/notebook": "^3.1.0",
-    "@jupyterlab/mainmenu": "^3.1.0",
+    "@jupyterlab/application": ">=3.1.0",
+    "@jupyterlab/settingregistry": ">=3.1.0",
+    "@jupyterlab/notebook": ">=3.1.0",
+    "@jupyterlab/mainmenu": ">=3.1.0",
     "fa-icons": "^0.2.0",
     "jquery":"^3.5.0"
   },
   "devDependencies": {
-    "@jupyterlab/builder":"^3.3.2",
+    "@jupyterlab/builder":">=3.3.2",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
     "@types/jquery":"^3.5.0",
