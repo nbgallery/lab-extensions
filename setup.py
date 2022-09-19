@@ -107,6 +107,7 @@ setup_args = dict(
     install_requires=[
         "jupyterlab>=3.1.0",
         "jupyter-nbgallery~=2.0",
+        "jupyter_server>=1.4"
     ],
     zip_safe=False,
     include_package_data=True,
