@@ -29,6 +29,9 @@ Ensure the following environment variables are configured to anable various feat
 - ENABLE_INSTRUMENTATION - Set to 1 to record cell executions to NBGallery
 - NBGALLERY_TERMINATION_TIME - Date/Time string for when the Jupyter instance will terminate/delete contents (If empty, no date is displayed)
 
+# Checking Configuration
+ - To ensure NBGALLERY_URL is set visit `/jupyterlab_nbgallery/environment` under the Jupyter server root
+   - Example: If juptyer lab is at http://localhost/lab, visit http://localhost/jupyterlab_nbgallery/environment
 
 # Build
 
