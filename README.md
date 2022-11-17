@@ -14,8 +14,8 @@ jupyterlab-nbgallery
 * [environment-Life](environment-life/README.md) - Does not work in Retrolab/Notebookv7 at this time
 * [environment-registration](environment-registration/README.md)
 * [gallery-menu](gallery-menu/README.md)
-* [inject-uuid](inject-uuid/README.md)
-* instrumentation
+* [inject-uuid](inject-uuid/README.md) - Add the NBGallery UUID and Commit ID to the environment of the kernel
+* [instrumentation](instrumentation/README.md) - Track cell execution metrics and submit them to NBGallery
 * [userpreferences](userpreferences/README.md) - Save JupyterLab prefernces to NBGallery and download them back to Jupyter
 
 # Installation
