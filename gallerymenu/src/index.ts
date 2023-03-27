@@ -91,7 +91,7 @@ class galleryMenu {
   }
   /* Get the gallery metadata of a notebook */
   getGalleryMetadata(notebook: Notebook): any {
-    return notebook.model.metadata.toJSON()["gallery"];
+    return notebook.model.sharedModel.metadata["gallery"];
   }
   /* Set the gallery metadata of a notebook */
   setGalleryMetadata(notebook: Notebook, metadata: any) {
