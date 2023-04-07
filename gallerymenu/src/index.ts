@@ -308,8 +308,7 @@ class galleryMenu {
       } else if (gallery_metadata.link) {
         window.open(gallery_url.origin + "/notebook/" + response.link + "?staged=" + response.staging_id + "#UPDATE");
       } else {
-        //This is where the parent ID would be sent
-        window.open(gallery_url.origin + "?staged=" + response.staging_id + "#STAGE");
+        window.open(gallery_url.origin + "?staged=" + response.staging_id + "&parent_uuid=" + gallery_metadata.parent_uuid + "#STAGE");
       }
     } else {
       //Append system tags here
@@ -547,7 +546,8 @@ class galleryMenu {
       },
       execute: () => {
         let notebook = this.currentNotebook();
-        this.setGalleryMetadata(notebook, {});
+        let parent_uuid=this.getGalleryMetadata(notebook).uuid;
+        this.setGalleryMetadata(notebook, {"parent_uuid":parent_uuid});
         this.uploadCallback();
       }
     });
