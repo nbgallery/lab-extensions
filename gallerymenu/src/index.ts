@@ -53,6 +53,7 @@ class stagingJson {
 class galleryMenu {
   gallery_url: string;
   gallery_menu: Menu;
+  default_tags: string;
   mainMenu: IMainMenu;
   notebooks: INotebookTracker;
   app: JupyterFrontEnd;
@@ -83,6 +84,7 @@ class galleryMenu {
         if (self.gallery_url == "") {
           self.gallery_url = environment['NBGALLERY_URL'];
         }
+        self.default_tags = environment['DEFAULT_TAGS'];
       }
     });
     this.gallery_menu = this.buildMenus();
@@ -232,7 +234,7 @@ class galleryMenu {
             this.triggerSave();
             let stagingResults = await this.stageNotebook(notebook, url, gallery_metadata.uuid);
             if (stagingResults) {
-              this.finishUpload(notebook, gallery_metadata, stagingResults, url, false);
+              this.finishUpload(notebook, gallery_metadata, stagingResults, url, false, "");
               this.updateMetadata(notebook, gallery_metadata, stagingResults);
             }
           } else if (result.button.label == "View Diff") {
@@ -299,17 +301,19 @@ class galleryMenu {
       return;
     }
   }
-  finishUpload(notebook: Notebook, gallery_metadata: any, response: stagingJson, gallery_url: URL, change_request: boolean) {
+  finishUpload(notebook: Notebook, gallery_metadata: any, response: stagingJson, gallery_url: URL, change_request: boolean, default_tags: string) {
     if (gallery_metadata) {
       if (change_request) {
         window.open(gallery_url.origin + "/notebook/" + gallery_metadata.uuid + "?staged=" + response.staging_id + "#CHANGE_REQ");
       } else if (gallery_metadata.link) {
         window.open(gallery_url.origin + "/notebook/" + response.link + "?staged=" + response.staging_id + "#UPDATE");
       } else {
+        //This is where the parent ID would be sent
         window.open(gallery_url.origin + "?staged=" + response.staging_id + "#STAGE");
       }
     } else {
-      window.open(gallery_url.origin + "?staged=" + response.staging_id + "#STAGE");
+      //Append system tags here
+      window.open(gallery_url.origin + "?staged=" + response.staging_id + "&tags=" + encodeURIComponent(default_tags) + "#STAGE");
     }
   }
   async uploadCallback() {
@@ -319,8 +323,9 @@ class galleryMenu {
     let gallery_metadata = this.getGalleryMetadata(notebook);
     let url = this.getGalleryLink();
     let stagingResults = await this.stageNotebook(notebook, url, null);
+    let default_tags = this.default_tags;
     if (stagingResults) {
-      this.finishUpload(notebook, gallery_metadata, stagingResults, url, false);
+      this.finishUpload(notebook, gallery_metadata, stagingResults, url, false, default_tags);
       this.updateMetadata(notebook, gallery_metadata, stagingResults);
     }
   }
@@ -336,7 +341,7 @@ class galleryMenu {
     } else {
       let stagingResults = await this.stageNotebook(notebook, url, gallery_metadata.uuid);
       if (stagingResults) {
-        this.finishUpload(notebook, gallery_metadata, stagingResults, url, false);
+        this.finishUpload(notebook, gallery_metadata, stagingResults, url, false, "");
         this.updateMetadata(notebook, gallery_metadata, stagingResults);
       }
     }
@@ -349,7 +354,7 @@ class galleryMenu {
     let url = this.getGalleryLink();
     let stagingResults = await this.stageNotebook(notebook, url, gallery_metadata.uuid);
     if (stagingResults) {
-      this.finishUpload(notebook, gallery_metadata, stagingResults, url, true);
+      this.finishUpload(notebook, gallery_metadata, stagingResults, url, true, "");
       this.updateMetadata(notebook, gallery_metadata, stagingResults);
     }
 
