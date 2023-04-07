@@ -97,7 +97,7 @@ class galleryMenu {
   }
   /* Set the gallery metadata of a notebook */
   setGalleryMetadata(notebook: Notebook, metadata: any) {
-    notebook.model.metadata.set('gallery', metadata);
+    notebook.model.sharedModel.setMetadata("gallery", metadata);
     this.triggerSave(); //Not ideal but hopefully they didn't switch notebooks. Research a better way
   }
   updateMetadata(notebook: Notebook, gallery_metadata: any, response: stagingJson) {
