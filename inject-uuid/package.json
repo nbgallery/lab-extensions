@@ -46,8 +46,8 @@
     "@jupyterlab/notebook": ">=3.6.0",
     "@jupyterlab/settingregistry": ">=3.6.0",
     "jquery": "^3.5.0",
-    "yjs": "^13.5.0",
-    "npm": "^9.6.4"
+    "npm": "^9.6.4",
+    "yjs": "^13.5.0"
   },
   "devDependencies": {
     "@jupyterlab/builder": ">=3.3.2",
@@ -57,8 +57,8 @@
     "eslint-plugin-jsdoc": "^39.0.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.18.3",
-    "prettier": ">=1.13.0",
     "npm-run-all": "^4.1.5",
+    "prettier": ">=1.13.0",
     "rimraf": "^3.0.2",
     "typescript": "~4.1.3"
   },

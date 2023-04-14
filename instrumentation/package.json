@@ -39,17 +39,16 @@
     "install-ext": "jlpm run build",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
-    "watch:src": "run-p watch:src watch:labextension",
     "watch:src": "tsc -w",
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
     "@jupyterlab/application": ">=3.6.0",
-    "@jupyterlab/settingregistry": ">=3.6.0",
     "@jupyterlab/coreutils": ">=5.2.0",
+    "@jupyterlab/settingregistry": ">=3.6.0",
     "jquery": "^3.5.0",
-    "yjs": "^13.5.0",
-    "ts-md5": "^1.2.9"
+    "ts-md5": "^1.2.9",
+    "yjs": "^13.5.0"
   },
   "devDependencies": {
     "@jupyterlab/builder": ">=3.3.2",
