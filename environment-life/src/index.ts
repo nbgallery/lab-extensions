@@ -32,7 +32,10 @@ const extension: JupyterFrontEndPlugin<void> = {
       console.log(`termination Time: ${termination_time}`);
       if( termination_time && termination_time.length > 0){
         let expires = new Date(termination_time + " UTC");
-        const widget = new expirationWidget();
+        const widget = new Widget();
+        widget.title.label = 'Jupyter Environment Expires';
+        widget.addClass('jp-expiration-widget');
+        widget.id = 'environment_expires';
         widget.node.textContent="Expires: " + expires.toLocaleString();
         statusBar.registerStatusItem('bench-expiration', { align: "right", item: widget} );
       }
@@ -42,11 +45,3 @@ const extension: JupyterFrontEndPlugin<void> = {
 
 export default extension;
 
-class expirationWidget extends Widget {
-  constructor() {
-    super();
-    this.addClass('jp-expiration-widget');
-    this.id = 'environment_expires';
-    this.title.label = 'Jupyter Environment Expires';
-  }
-}

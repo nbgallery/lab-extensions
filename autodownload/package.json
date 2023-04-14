@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlab-nbgallery/autodownload",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "NBGallery Auto Download Notebooks that are starred or recently executed",
   "keywords": [
     "jupyter",
@@ -47,8 +47,7 @@
     "@jupyterlab/application": ">=3.6.0",
     "@jupyterlab/coreutils": ">=5.2.0",
     "@jupyterlab/settingregistry": ">=3.6.0",
-    "jquery": "^3.5.0",
-    "yjs": "^13.5.0"
+    "jquery": "^3.5.0"
   },
   "devDependencies": {
     "@jupyterlab/builder": ">=3.3.2",

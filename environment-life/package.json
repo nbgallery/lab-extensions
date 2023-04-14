@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlab-nbgallery/environment-life",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Allow an expiration data to be displayed in the bottom right corner when operating in an environment where jupyter instances have a defined lifetime.",
   "keywords": [
     "jupyter",
@@ -48,9 +48,7 @@
     "@jupyterlab/services": ">=6.6.0",
     "@jupyterlab/settingregistry": ">=3.6.0",
     "@jupyterlab/statusbar": ">=3.6.0",
-    "@lumino/widgets": ">=2.0.0",
-    "jquery": "^3.5.0",
-    "react": "^18.0.0"
+    "jquery": "^3.5.0"
   },
   "devDependencies": {
     "@jupyterlab/builder": ">=3.6.0",
