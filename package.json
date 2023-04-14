@@ -31,8 +31,8 @@
     ]
   },
   "devDependencies": {
-    "embedme": "^1.17.1",
-    "husky": "^3.0.9",
+    "embedme": "^1.22.1",
+    "husky": "^3.1.0",
     "lerna": "^3.18.4",
     "lint-staged": "^9.4.3",
     "prettier": "^1.19.1"

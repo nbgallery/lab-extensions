@@ -37,6 +37,9 @@ function injectUUID(panel: NotebookPanel): void {
       }
     }
   });
+  panel.sessionContext.statusChanged.connect(() =>{
+    console.log(panel.sessionContext.session.kernel.status);
+  });
 }
 
 export default extension;
