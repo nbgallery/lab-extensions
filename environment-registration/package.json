@@ -48,8 +48,7 @@
     "@jupyterlab/coreutils": ">=5.2.0",
     "@jupyterlab/services": ">=6.6.0",
     "@jupyterlab/settingregistry": ">=3.6.0",
-    "jquery": "^3.5.0",
-    "yjs": "^13.5.0"
+    "jquery": "^3.5.0"
   },
   "devDependencies": {
     "@jupyterlab/builder": ">=3.3.2",

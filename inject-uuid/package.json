@@ -45,9 +45,7 @@
     "@jupyterlab/application": ">=3.6.0",
     "@jupyterlab/notebook": ">=3.6.0",
     "@jupyterlab/settingregistry": ">=3.6.0",
-    "jquery": "^3.5.0",
-    "npm": "^9.6.4",
-    "yjs": "^13.5.0"
+    "jquery": "^3.5.0"
   },
   "devDependencies": {
     "@jupyterlab/builder": ">=3.3.2",
