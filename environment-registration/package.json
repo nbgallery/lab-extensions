@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlab-nbgallery/environment-registration",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Register NBGallery Environment",
   "keywords": [
     "jupyter",
@@ -45,8 +45,8 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyterlab/application": ">=3.1.0",
-    "@jupyterlab/settingregistry": ">=3.1.0",
+    "@jupyterlab/application": ">=3.6.0",
+    "@jupyterlab/settingregistry": ">=3.6.0",
     "@jupyterlab/coreutils": ">=5.2.0",
     "jquery":"^3.5.0"
   },
@@ -55,9 +55,9 @@
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
     "@types/jquery":"^3.5.0",
-    "eslint": "^7.14.0",
+    "eslint": "^8.0.0",
     "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-jsdoc": "^22.0.0",
+    "eslint-plugin-jsdoc": "^39.0.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.18.3",
     "npm-run-all": "^4.1.5",

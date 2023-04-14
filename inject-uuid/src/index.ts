@@ -24,7 +24,7 @@ const extension: JupyterFrontEndPlugin<void> = {
 function injectUUID(panel: NotebookPanel): void {
   panel.sessionContext.ready.then(() => {
     let gallery_metadata: any;
-    gallery_metadata = panel.model.metadata.toJSON()["gallery"];
+    gallery_metadata = panel.model.sharedModel.metadata["gallery"];
     if (gallery_metadata && gallery_metadata['uuid']) {
       let kernel = panel.sessionContext.session.kernel;
       console.log(kernel);

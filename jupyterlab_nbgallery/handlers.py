@@ -45,7 +45,7 @@ class EnvironmentHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
         self.finish(json.dumps({"NBGALLERY_URL": os.getenv("NBGALLERY_URL"), "NBGALLERY_CLIENT_NAME": os.getenv(
-            "NBGALLERY_CLIENT_NAME"), "NBGALLERY_ENABLE_AUTODOWNLOAD": os.getenv("NBGALLERY_ENABLE_AUTODOWNLOAD")}))
+            "NBGALLERY_CLIENT_NAME"), "NBGALLERY_ENABLE_AUTODOWNLOAD": os.getenv("NBGALLERY_ENABLE_AUTODOWNLOAD"), "DEFAULT_TAGS": os.getenv("NBGALLERY_DEFAULT_TAGS")}))
 
 
 class InstrumentationHandler(APIHandler):

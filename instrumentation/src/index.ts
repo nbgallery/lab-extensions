@@ -34,11 +34,11 @@ interface executionRecord {
 
 function transmit_execution(notebook: Notebook, cell: Cell, success: boolean, runtime: number) {
   let gallery_metadata: any;
-  gallery_metadata = notebook.model.metadata.toJSON()["gallery"];
+  gallery_metadata = notebook.model.sharedModel.metadata["gallery"];
   if (gallery_metadata) {
     let log = new Object() as executionRecord;
     log["success"] = success;
-    log["md5"] = Md5.hashStr(cell.model.value.text);
+    log["md5"] = Md5.hashStr(cell.model.sharedModel.source);
     log["runtime"] = runtime;
     log["uuid"] = gallery_metadata["uuid"] || gallery_metadata["link"] || gallery_metadata["clone"];
     let url = gallery_metadata["gallery_url"];
