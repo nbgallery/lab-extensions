@@ -31,6 +31,10 @@ import {
   PageConfig
 } from '@jupyterlab/coreutils';
 
+import {
+  ISettingRegistry
+} from '@jupyterlab/settingregistry';
+
 import { DialogWidget } from './dialog'
 
 import $ from 'jquery';
@@ -38,7 +42,7 @@ import $ from 'jquery';
 const plugin: JupyterFrontEndPlugin<void> = {
   id: "@jupyterlab-nbgallery/gallerymenu",
   autoStart: true,
-  requires: [IMainMenu, INotebookTracker],
+  requires: [IMainMenu, INotebookTracker, ISettingRegistry],
   activate
 };
 
@@ -57,22 +61,29 @@ class galleryMenu {
   mainMenu: IMainMenu;
   notebooks: INotebookTracker;
   app: JupyterFrontEnd;
+  settingsRegistry: ISettingRegistry;
+  settings: ISettingRegistry.ISettings;
   dialogPromiseCache: Map<string, Promise<void>> = new Map();
-  constructor(app: JupyterFrontEnd, mainMenu: IMainMenu, notebooks: INotebookTracker) {
+  constructor(app: JupyterFrontEnd, mainMenu: IMainMenu, notebooks: INotebookTracker, settingsRegistry: ISettingRegistry) {
     this.gallery_url = "";
     this.app = app;
     this.mainMenu = mainMenu;
     this.notebooks = notebooks;
+    this.settingsRegistry = settingsRegistry;
+    Promise.all([this.app.restored, this.settingsRegistry.load('@jupyterlab-nbgallery/environment-registration:environment-registration')]).then(([,setting]) => {
+      this.settings = setting;
+      this.initialize();
+    });
   }
 
   async initialize() {
-    await Promise.all([this.app.restored]);
     const settings = ServerConnection.makeSettings();
     const requestUrl = URLExt.join(
       settings.baseUrl,
       'jupyterlab_nbgallery',
       'environment'
     );
+    this.gallery_url = this.settings.get('nbgallery_url').composite as string;
     let self = this;
     await $.ajax({
       method: 'GET',
@@ -629,7 +640,7 @@ class galleryMenu {
 
 export default plugin;
 
-function activate(app: JupyterFrontEnd, mainMenu: IMainMenu, notebooks: INotebookTracker) {
+function activate(app: JupyterFrontEnd, mainMenu: IMainMenu, notebooks: INotebookTracker, settingsRegistry: ISettingRegistry) {
   if (!notebooks) {
     return;
   }
@@ -640,6 +651,5 @@ function activate(app: JupyterFrontEnd, mainMenu: IMainMenu, notebooks: INoteboo
     case "consoles":
       return;
   }
-  let gallery = new galleryMenu(app, mainMenu, notebooks);
-  gallery.initialize();
+  new galleryMenu(app, mainMenu, notebooks, settingsRegistry);
 }
