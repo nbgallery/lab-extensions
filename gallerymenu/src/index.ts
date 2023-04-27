@@ -633,10 +633,7 @@ function activate(app: JupyterFrontEnd, mainMenu: IMainMenu, notebooks: INoteboo
   if (!notebooks) {
     return;
   }
-  let page = PageConfig.getOption("retroPage");
-  if (page == "") {
-    page = PageConfig.getOption("notebookPage");
-  }
+  const page = PageConfig.getOption("notebookPage");
   switch (page) {
     case "tree":
     case "terminals":
