@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlab-nbgallery/environment-registration",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Register NBGallery Environment",
   "keywords": [
     "jupyter",
