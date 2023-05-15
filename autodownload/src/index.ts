@@ -28,6 +28,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     let nbgallery_url = "";
     let env_enabled = 0;
     let config_enabled = false;
+    let gallery_settings = await settings.load('@jupyterlab-nbgallery/environment-registration');
 
     function get_url() {
       return PageConfig.getBaseUrl();
@@ -40,7 +41,11 @@ const extension: JupyterFrontEndPlugin<void> = {
         cache: false,
         xhrFields: { withCredentials: true },
         success: function (environment) {
-          nbgallery_url = environment['NBGALLERY_URL'];
+          try{
+            nbgallery_url = gallery_settings.get('nbgallery_url').composite as string;
+          } catch{
+            nbgallery_url = environment['NBGALLERY_URL'];
+          }
           env_enabled = environment['NBGALLERY_ENABLE_AUTODOWNLOAD'];
           config_enabled = setting.get('enabled').composite as boolean;
           console.info("Auto Downloading Notebooks");

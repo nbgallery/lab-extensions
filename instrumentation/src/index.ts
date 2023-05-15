@@ -31,8 +31,9 @@ interface executionRecord {
   runtime: number;
 }
 
+let gallery_url: string = null;
 
-function transmit_execution(notebook: Notebook, cell: Cell, success: boolean, runtime: number) {
+function transmit_execution(notebook: Notebook, cell: Cell, success: boolean, runtime: number, settings: ISettingRegistry.ISettings) {
   let gallery_metadata: any;
   gallery_metadata = notebook.model.sharedModel.metadata["gallery"];
   if (gallery_metadata) {
@@ -42,6 +43,9 @@ function transmit_execution(notebook: Notebook, cell: Cell, success: boolean, ru
     log["runtime"] = runtime;
     log["uuid"] = gallery_metadata["uuid"] || gallery_metadata["link"] || gallery_metadata["clone"];
     let url = gallery_metadata["gallery_url"];
+    // Reassign the url *only* if the previous value is falsy (ex. empty strings)
+    url ||= settings.get('nbgallery_url').composite as string;
+    url ||= gallery_url;
     console.log(url);
     if (url.length > 0 && log["uuid"].length > 0) {
       $.ajax({
@@ -71,6 +75,7 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     let tracker: CellTracking = {};
     let enabled = false;
+    let gallery_settings = await settings.load('@jupyterlab-nbgallery/environment-registration');
 
     function get_url() {
       return PageConfig.getBaseUrl();
@@ -84,6 +89,7 @@ const extension: JupyterFrontEndPlugin<void> = {
         cache: false,
         xhrFields: { withCredentials: true },
         success: function (environment) {
+          gallery_url = environment['NBGALLERY_URL']
           if (environment['NBGALLERY_ENABLE_INSTRUMENTATION'] == 1 || (setting.get('enabled').composite as boolean)) {
             setting.set("enabled", true);
             enabled = true;
@@ -113,7 +119,7 @@ const extension: JupyterFrontEndPlugin<void> = {
       if (enabled && cell instanceof CodeCell) {
         const finished = new Date();
         console.log("Post execution");
-        transmit_execution(notebook, cell, success, (finished.getTime() - tracker[cell.id].startTime));
+        transmit_execution(notebook, cell, success, (finished.getTime() - tracker[cell.id].startTime), gallery_settings);
       }
     });
     Promise.all([app.restored, settings.load('@jupyterlab-nbgallery/instrumentation:instrumentation')])
