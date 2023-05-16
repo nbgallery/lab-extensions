@@ -28,7 +28,6 @@ const extension: JupyterFrontEndPlugin<void> = {
     let nbgallery_url = "";
     let env_enabled = 0;
     let config_enabled = false;
-    let gallery_settings = await settings.load('@jupyterlab-nbgallery/environment-registration');
 
     function get_url() {
       return PageConfig.getBaseUrl();
@@ -42,7 +41,10 @@ const extension: JupyterFrontEndPlugin<void> = {
         xhrFields: { withCredentials: true },
         success: function (environment) {
           try{
-            nbgallery_url = gallery_settings.get('nbgallery_url').composite as string;
+            Promise.all([app.restored, settings.load('@jupyterlab-nbgallery/environment-registration:environment-registration')])
+            .then(([, gallery_settings]) => {
+              nbgallery_url = gallery_settings.get('nbgallery_url').composite as string;
+            });
           } catch{
             nbgallery_url = environment['NBGALLERY_URL'];
           }

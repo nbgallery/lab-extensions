@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlab-nbgallery/autodownload",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "NBGallery Auto Download Notebooks that are starred or recently executed",
   "keywords": [
     "jupyter",

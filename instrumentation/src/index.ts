@@ -75,7 +75,6 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     let tracker: CellTracking = {};
     let enabled = false;
-    let gallery_settings = await settings.load('@jupyterlab-nbgallery/environment-registration');
 
     function get_url() {
       return PageConfig.getBaseUrl();
@@ -89,7 +88,7 @@ const extension: JupyterFrontEndPlugin<void> = {
         cache: false,
         xhrFields: { withCredentials: true },
         success: function (environment) {
-          gallery_url = environment['NBGALLERY_URL']
+          gallery_url = environment['NBGALLERY_URL'];
           if (environment['NBGALLERY_ENABLE_INSTRUMENTATION'] == 1 || (setting.get('enabled').composite as boolean)) {
             setting.set("enabled", true);
             enabled = true;
@@ -119,7 +118,10 @@ const extension: JupyterFrontEndPlugin<void> = {
       if (enabled && cell instanceof CodeCell) {
         const finished = new Date();
         console.log("Post execution");
-        transmit_execution(notebook, cell, success, (finished.getTime() - tracker[cell.id].startTime), gallery_settings);
+        Promise.all([app.restored, settings.load('@jupyterlab-nbgallery/environment-registration:environment-registration')])
+        .then(([, gallery_settings]) => {
+          transmit_execution(notebook, cell, success, (finished.getTime() - tracker[cell.id].startTime), gallery_settings);
+        });
       }
     });
     Promise.all([app.restored, settings.load('@jupyterlab-nbgallery/instrumentation:instrumentation')])
