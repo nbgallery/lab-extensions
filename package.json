@@ -12,7 +12,8 @@
     "lint": "jlpm && jlpm run prettier",
     "lint:check": "jlpm run embedme --verify && jlpm run prettier:check",
     "prettier": "prettier --write \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
-    "prettier:check": "prettier --list-different \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\""
+    "prettier:check": "prettier --list-different \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
+    "prepare": "husky install"
   },
   "husky": {
     "hooks": {
@@ -32,7 +33,7 @@
   },
   "devDependencies": {
     "embedme": "^1.22.1",
-    "husky": "^3.1.0",
+    "husky": "^8.0.0",
     "lerna": "^3.18.4",
     "lint-staged": "^9.4.3",
     "prettier": "^1.19.1"

@@ -21,6 +21,10 @@ import {
 import { ServerConnection } from '@jupyterlab/services';
 
 import {
+  ISettingRegistry
+} from '@jupyterlab/settingregistry';
+
+import {
   URLExt
 } from '@jupyterlab/coreutils';
 
@@ -29,7 +33,7 @@ import $ from 'jquery';
 const plugin: JupyterFrontEndPlugin<void> = {
   id: "@jupyterlab-nbgallery/userpreferences",
   autoStart: true,
-  requires: [IMainMenu],
+  requires: [IMainMenu, ISettingRegistry],
   activate
 };
 
@@ -40,35 +44,46 @@ class preferencesMenu {
   app: JupyterFrontEnd;
   gallery_preferences_url: string;
   jupyter_preferences_url: string;
-  settings: any;
-  constructor(app: JupyterFrontEnd, mainMenu: IMainMenu) {
+  settingRegistry: ISettingRegistry;
+  settings: ISettingRegistry.ISettings;
+  server_settings: any;
+  constructor(app: JupyterFrontEnd, mainMenu: IMainMenu, settingRegistry: ISettingRegistry) {
     this.app = app;
     this.mainMenu = mainMenu;
-    this.settings = ServerConnection.makeSettings();
+    this.server_settings = ServerConnection.makeSettings();
+    this.settingRegistry = settingRegistry;
+    Promise.all([this.app.restored, this.settingRegistry.load('@jupyterlab-nbgallery/environment-registration:environment-registration')]).then(([,setting]) => {
+      this.settings = setting;
+      this.startup();
+    });
   }
   async startup() {
-    const requestUrl = URLExt.join(
-      this.settings.baseUrl,
-      'jupyterlab_nbgallery',
-      'environment'
-    );
-    let self = this;
-    await $.ajax({
-      method: 'GET',
-      headers: { Accept: 'application/json' },
-      url: requestUrl,
-      cache: false,
-      xhrFields: { withCredentials: true },
-      success: function (environment :any) {
-        self.gallery_url = new URL(environment['NBGALLERY_URL']);
-      }
-    });
+    try{ 
+      this.gallery_url = new URL(this.settings.get('nbgallery_url').composite as string);
+    }catch{
+      const requestUrl = URLExt.join(
+        this.server_settings.baseUrl,
+        'jupyterlab_nbgallery',
+        'environment'
+      );
+      let self = this;
+      await $.ajax({
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        url: requestUrl,
+        cache: false,
+        xhrFields: { withCredentials: true },
+        success: function (environment :any) {
+          self.gallery_url = new URL(environment['NBGALLERY_URL']);
+        }
+      });
+    }
     this.gallery_preferences_url = URLExt.join(
       this.gallery_url.origin,
       'preferences'
     );
     this.jupyter_preferences_url = URLExt.join(
-      this.settings.baseUrl,
+      this.server_settings.baseUrl,
       'jupyterlab_nbgallery',
       'preferences'
     );
@@ -213,7 +228,6 @@ class preferencesMenu {
 }
 
 export default plugin;
-function activate(app: JupyterFrontEnd, mainMenu: IMainMenu) {
-  let menu = new preferencesMenu(app, mainMenu);
-  menu.startup();
+function activate(app: JupyterFrontEnd, mainMenu: IMainMenu, settingRegistry: ISettingRegistry) {
+  new preferencesMenu(app, mainMenu, settingRegistry);
 }
