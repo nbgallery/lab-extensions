@@ -195,6 +195,54 @@ class galleryMenu {
       showErrorMessage("Staging Failed", "An error occured checking for updates to the specified notebook.  Please ensure that you are logged in to the Gallery.");
     }
   }
+  async diffCallback(): Promise<void> {
+    let buttons: Array<Dialog.IButton> = [];
+    let url = this.getGalleryLink();
+    let notebook = this.currentNotebook();
+    let gallery_metadata = this.getGalleryMetadata(notebook);
+    buttons[buttons.length] = Dialog.cancelButton({ label: "Close" });
+    let title = "Diff with Remote Notebook";
+    let body = new DialogWidget();
+    let diff = await $.ajax({
+      method: 'POST',
+      url: url.origin + "/notebooks/" + gallery_metadata['uuid'] + '/diff',
+      dataType: 'json',
+      contentType: "text/plain",
+      headers: {
+        accept: "application/json"
+      },
+      data: JSON.stringify(this.stripOutput(notebook)),
+      xhrFields: { withCredentials: true },
+    });
+    if(diff['different']){
+      body.content = diff['css'] + diff['inline'];
+    }else{
+      body.content = "<div>No Changes</div>";
+    }
+    
+    const key = gallery_metadata['uuid'] + "changedDialog";
+    const promise = this.dialogPromiseCache.get(key);
+    if (promise) {
+      return promise;
+    } else {
+      const dialogPromise = showDialog({
+        title: title,
+        body: body,
+        buttons: buttons
+      }).then(
+        async (result) => {
+          this.dialogPromiseCache.delete(key);
+        },
+        error => {
+          // TODO: Use .finally() above when supported
+          this.dialogPromiseCache.delete(key);
+          throw error;
+        }
+      );
+      this.dialogPromiseCache.set(key, dialogPromise);
+      return dialogPromise;
+    }
+  }
   async changedDialog(showDiff: boolean): Promise<void> {
     let buttons: Array<Dialog.IButton> = [];
     let url = this.getGalleryLink();
@@ -586,6 +634,18 @@ class galleryMenu {
         this.changesCallback();
       }
     });
+    commands.addCommand("gallery-showdiff", {
+      label: "Show Diff with Gallery",
+      isEnabled: () => {
+        return this.hasUUID();
+      },
+      isVisible: () => {
+        return this.hasUUID();
+      },
+      execute: () => {
+        this.diffCallback();
+      }
+    });
     commands.addCommand("gallery-unlink", {
       label: "Unlink from Gallery",
       isEnabled: () => {
@@ -631,6 +691,7 @@ class galleryMenu {
     menu.addItem({ command: "gallery-link" });
     menu.addItem({ command: "gallery-unlink" });
     menu.addItem({ command: "gallery-checkupdates" });
+    menu.addItem({ command: "gallery-showdiff" });
     menu.addItem({ type: "separator" });
     menu.addItem({ command: "gallery-visit" });
     return menu;
