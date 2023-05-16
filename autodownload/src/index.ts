@@ -40,7 +40,14 @@ const extension: JupyterFrontEndPlugin<void> = {
         cache: false,
         xhrFields: { withCredentials: true },
         success: function (environment) {
-          nbgallery_url = environment['NBGALLERY_URL'];
+          try{
+            Promise.all([app.restored, settings.load('@jupyterlab-nbgallery/environment-registration:environment-registration')])
+            .then(([, gallery_settings]) => {
+              nbgallery_url = gallery_settings.get('nbgallery_url').composite as string;
+            });
+          } catch{
+            nbgallery_url = environment['NBGALLERY_URL'];
+          }
           env_enabled = environment['NBGALLERY_ENABLE_AUTODOWNLOAD'];
           config_enabled = setting.get('enabled').composite as boolean;
           console.info("Auto Downloading Notebooks");
