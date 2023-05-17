@@ -32,7 +32,8 @@ const extension: JupyterFrontEndPlugin<void> = {
     function get_url() {
       return PageConfig.getBaseUrl();
     }
-    function autodownload(setting: ISettingRegistry.ISettings) {
+    function autodownload(setting: ISettingRegistry.ISettings, environment_setting: ISettingRegistry.ISettings) {
+      nbgallery_url = environment_setting.get('nbgallery_url').composite as string;
       $.ajax({
         method: 'GET',
         headers: { Accept: 'application/json' },
@@ -40,18 +41,13 @@ const extension: JupyterFrontEndPlugin<void> = {
         cache: false,
         xhrFields: { withCredentials: true },
         success: function (environment) {
-          try{
-            Promise.all([app.restored, settings.load('@jupyterlab-nbgallery/environment-registration:environment-registration')])
-            .then(([, gallery_settings]) => {
-              nbgallery_url = gallery_settings.get('nbgallery_url').composite as string;
-            });
-          } catch{
+          if (nbgallery_url.length == 0 ){
             nbgallery_url = environment['NBGALLERY_URL'];
           }
           env_enabled = environment['NBGALLERY_ENABLE_AUTODOWNLOAD'];
           config_enabled = setting.get('enabled').composite as boolean;
           console.info("Auto Downloading Notebooks");
-          if (env_enabled == 1 || config_enabled) {
+          if (env_enabled == 1 || config_enabled && nbgallery_url.length > 0) {
             download_notebooks("Starred", nbgallery_url, "/notebooks/stars")
             download_notebooks("Recently Executed", nbgallery_url, "/notebooks/recently_executed");
           }
@@ -123,10 +119,10 @@ const extension: JupyterFrontEndPlugin<void> = {
         }
       });
     }
-    Promise.all([app.restored, settings.load('@jupyterlab-nbgallery/autodownload:autodownload')])
-      .then(([, setting]) => {
+    Promise.all([app.restored, settings.load('@jupyterlab-nbgallery/autodownload:autodownload'), settings.load('@jupyterlab-nbgallery/environment-registration:environment-registration')])
+      .then(([, setting, environment_setting]) => {
         try {
-          autodownload(setting);
+          autodownload(setting, environment_setting);
         } catch (reason) {
           console.error(`Problem downloading notebooks \n ${reason}`);
         }
