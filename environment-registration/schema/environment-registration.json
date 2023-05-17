@@ -13,7 +13,7 @@
       "type": "string",
       "title": "URL User for registration",
       "description": "Url for NBGallery",
-      "default":"http://localhost:3000"
+      "default":""
     },
     "nbgallery_client_name": {
       "type": "string",
