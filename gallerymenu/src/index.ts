@@ -215,7 +215,7 @@ class galleryMenu {
       xhrFields: { withCredentials: true },
     });
     if(diff['different']){
-      body.content = diff['css'] + diff['inline'];
+      body.content = "<div style='color:#000'>" + diff['css'] + diff['inline']+"</div>";
     }else{
       body.content = "<div>No Changes</div>";
     }
@@ -271,7 +271,7 @@ class galleryMenu {
         data: JSON.stringify(this.stripOutput(notebook)),
         xhrFields: { withCredentials: true },
       });
-      body.content = diff['css'] + diff['inline'];
+      body.content = "<div style='color:#000'>" + diff['css'] + diff['inline']+"</div>";
     } else {
       body.content = "The <a href='" + url.origin + "/notebooks/" + gallery_metadata['uuid'] + "' target='_blank'>Remote Notebook</a> has changed on Notebook Gallery.  What do you want to do?"
     }
