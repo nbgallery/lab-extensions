@@ -1,0 +1,14 @@
+.jp-Dialog-body .diff ul {
+    background-color: var(--jp-layout-color1);
+    color: var(--jp-ui-font-color1);
+}
+.jp-Dialog-body .diff li:hover {
+    background:inherit;
+    filter:brightness(90%);
+}
+.jp-Dialog-body .diff li.del {
+    background:#fcc;
+}
+.jp-Dialog-body .diff li.ins {
+    background:#9f9;
+}
