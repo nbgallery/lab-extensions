@@ -112,21 +112,12 @@ class galleryMenu {
     this.triggerSave(); //Not ideal but hopefully they didn't switch notebooks. Research a better way
   }
   updateMetadata(notebook: Notebook, gallery_metadata: any, response: stagingJson) {
-    let linked = false;
-    let cloned = false;
-    if (gallery_metadata && gallery_metadata.link) {
-      linked = true;
-    }
-    if (gallery_metadata && gallery_metadata.clone) {
-      cloned = true;
-    }
-    if (!gallery_metadata) {
-      gallery_metadata = {};
-    }
+    let linked = gallery_metadata && gallery_metadata.link;
+    let cloned = gallery_metadata && gallery_metadata.clone;
+    gallery_metadata ||= {}
     gallery_metadata.commit = response.commit;
     //used for injecting the IDs into the environment. Make sure it's current
     gallery_metadata.staging_id = response.staging_id;
-    gallery_metadata.filename = response.filename;
     if (response.link) {
       gallery_metadata.uuid = response.link;
     } else {
