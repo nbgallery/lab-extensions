@@ -1,10 +1,12 @@
-
 {
 "packages": [
-  "environment-registration",
-  "environment-life",
   "autodownload",
-  "gallerymenu"
+  "environment-life",
+  "environment-registration",
+  "gallerymenu",
+  "inject-uuid",
+  "instrumentation",
+  "userpreferences"
 ],
 "npmClient": "jlpm",
 "useWorkspaces": true,

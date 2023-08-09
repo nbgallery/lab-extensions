@@ -6,7 +6,7 @@
     "install": "lerna bootstrap",
     "build-jlab": "jupyter lab build --debug",
     "build-ext": "lerna run build:all",
-    "clean-ext": "lerna run clean",
+    "clean-ext": "lerna run clean:all",
     "embedme": "embedme \"[!n]*/**/README.md\"",
     "install-ext": "lerna run install-ext",
     "lint": "jlpm && jlpm run prettier",
@@ -20,22 +20,20 @@
       "pre-commit": "lint-staged"
     }
   },
-  "workspaces": {
-    "packages": [
-      "environment-registration",
-      "environment-life",
-      "autodownload",
-      "gallerymenu",
-      "instrumentation",
-      "inject-uuid",
-      "userpreferences"
-    ]
-  },
+  "workspaces": [
+    "autodownload",
+    "environment-life",
+    "environment-registration",
+    "gallerymenu",
+    "inject-uuid",
+    "instrumentation",
+    "userpreferences"
+  ],
   "devDependencies": {
     "embedme": "^1.22.1",
-    "husky": "^8.0.0",
-    "lerna": "^3.18.4",
-    "lint-staged": "^9.4.3",
-    "prettier": "^1.19.1"
+    "husky": "^8.0.3",
+    "lerna": "6.5.1",
+    "lint-staged": "^13.2.1",
+    "prettier": "^2.8.7"
   }
 }

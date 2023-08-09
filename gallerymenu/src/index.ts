@@ -99,7 +99,7 @@ class galleryMenu {
       }
     });
     this.gallery_menu = this.buildMenus();
-    this.mainMenu.addMenu(this.gallery_menu, { rank: 50 });
+    this.mainMenu.addMenu(this.gallery_menu, true, { rank: 50 });
     setTimeout(this.gallery_menu.update, 4000);
   }
   /* Get the gallery metadata of a notebook */
@@ -216,18 +216,19 @@ class galleryMenu {
     if (promise) {
       return promise;
     } else {
-      const dialogPromise = showDialog({
+      const dialogPromise:any = showDialog({
         title: title,
         body: body,
         buttons: buttons
       }).then(
-        async (result) => {
+        async (result:any) => {
           this.dialogPromiseCache.delete(key);
         },
         error => {
           // TODO: Use .finally() above when supported
           this.dialogPromiseCache.delete(key);
           throw error;
+          return dialogPromise;
         }
       );
       this.dialogPromiseCache.set(key, dialogPromise);
@@ -271,7 +272,7 @@ class galleryMenu {
     if (promise) {
       return promise;
     } else {
-      const dialogPromise = showDialog({
+      const dialogPromise:any = showDialog({
         title: title,
         body: body,
         buttons: buttons
@@ -297,6 +298,7 @@ class galleryMenu {
           // TODO: Use .finally() above when supported
           this.dialogPromiseCache.delete(key);
           throw error;
+          return dialogPromise;
         }
       );
       this.dialogPromiseCache.set(key, dialogPromise);

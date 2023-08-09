@@ -88,7 +88,7 @@ class preferencesMenu {
       'preferences'
     );
     this.gallery_menu = this.buildMenus();
-    this.mainMenu.addMenu(this.gallery_menu, { rank: 50 });
+    this.mainMenu.addMenu(this.gallery_menu, true, { rank: 50 });
   }
   buildMenus() {
     console.log("Building Menus")

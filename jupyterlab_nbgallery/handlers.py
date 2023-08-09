@@ -2,13 +2,36 @@ import os
 import json
 import shutil
 import json
+from urllib.parse import unquote
 from pathlib import Path
 
 from jupyter_server.base.handlers import APIHandler
-from jupyter_server.utils import url_path_join
+from jupyter_server.services.contents.handlers import ContentsHandler
+from jupyter_server.utils import url_path_join,ensure_async
 
 import tornado
 
+
+class PostHack(ContentsHandler):
+    '''
+    Hack to have POST /post/filename create a new file like PUT in the Jupyter API.
+    This is a workaround for interaction with PKI and pre-flight checks in some browsers.
+    '''
+    @tornado.web.authenticated
+    async def post(self, path=''):
+        self.log.debug('POST hack; path: ' + path)
+        model = self.get_json_body()
+        parts = unquote(self.request.path).split('/')
+        idx = parts.index('post')
+        path = '/'.join(parts[idx + 1:])
+        if model:
+            exists = await ensure_async(self.contents_manager.file_exists(path))
+            if exists:
+                await ensure_async(self._save(model, path))
+            else:
+                await ensure_async(self._upload(model, path))
+        else:
+            await ensure_async(self._new_untitled(path))
 
 class PreferencesHandler(APIHandler):
     @tornado.web.authenticated
@@ -78,8 +101,10 @@ def setup_handlers(web_app, url_path):
     preferences_handler = url_path_join(base_url, url_path, "preferences")
     instrumentation_pattern = url_path_join(
         base_url, url_path, "instrumentation")
+    post_pattern = url_path_join(base_url, "post",".*")
     handlers = [(environment_pattern, EnvironmentHandler),
                 (expiration_pattern, ExpirationHandler),
                 (preferences_handler, PreferencesHandler),
-                (instrumentation_pattern, InstrumentationHandler)]
+                (instrumentation_pattern, InstrumentationHandler),
+                (post_pattern, PostHack)]
     web_app.add_handlers(host_pattern, handlers)

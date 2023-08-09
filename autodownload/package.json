@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlab-nbgallery/autodownload",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "NBGallery Auto Download Notebooks that are starred or recently executed",
   "keywords": [
     "jupyter",
@@ -36,7 +36,7 @@
     "clean": "jlpm run clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "clean:labextension": "rimraf jupyterlab_nbgallery/labextension",
-    "clean:all": "rimrafjlpm run clean:lib && jlpm run clean:labextension",
+    "clean:all": "rimraf jlpm run clean:lib && jlpm run clean:labextension",
     "install-ext": "jlpm run build",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
@@ -44,22 +44,36 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyterlab/application": ">=3.6.0",
-    "@jupyterlab/coreutils": ">=5.2.0",
-    "@jupyterlab/settingregistry": ">=3.6.0",
-    "jquery": "^3.5.0"
+    "@jupyterlab/application": "^4.0.0",
+    "@jupyterlab/coreutils": "^6.0.0",
+    "@jupyterlab/settingregistry": "^4.0.0",
+    "jquery": "^3.7.0",
+    "webpack": "^5.88.2"
   },
   "devDependencies": {
-    "@jupyterlab/builder": ">=3.3.2",
+    "@jupyterlab/builder": "^4.0.0",
     "@types/jquery": "^3.5.0",
-    "eslint": "^8.0.0",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-jsdoc": "^39.0.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.18.3",
+    "@types/json-schema": "^7.0.11",
+    "@types/react": "^18.0.26",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/parser": "^5.55.0",
+    "css-loader": "^6.7.1",
+    "eslint": "^8.36.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "npm-run-all": "^4.1.5",
-    "rimraf": "^3.0.2",
-    "typescript": "~4.1.3"
+    "prettier": "^2.8.7",
+    "react": "^18.0.26",
+    "rimraf": "^4.4.1",
+    "source-map-loader": "^1.0.2",
+    "style-loader": "^3.3.1",
+    "stylelint": "^14.9.1",
+    "stylelint-config-prettier": "^9.0.4",
+    "stylelint-config-recommended": "^8.0.0",
+    "stylelint-config-standard": "^26.0.0",
+    "stylelint-prettier": "^2.0.0",
+    "typescript": "~5.0.2",
+    "yjs": "^13.5.0"
   },
   "sideEffects": [
     "style/*.css"
