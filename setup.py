@@ -106,7 +106,7 @@ setup_args = dict(
     packages=setuptools.find_packages(),
     install_requires=[
         "jupyterlab>=4.0.0",
-        "jupyter_server>=1.4"
+        "jupyter_server>=2"
     ],
     zip_safe=False,
     include_package_data=True,
