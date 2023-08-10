@@ -2,7 +2,7 @@ from ._version import __version__
 from .handlers import setup_handlers
 
 
-def _jupyter_server_extension_paths():
+def _jupyter_server_extension_points():
     return [{"module": "jupyterlab_nbgallery"}]
 
 
