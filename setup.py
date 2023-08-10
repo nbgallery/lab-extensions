@@ -40,7 +40,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 name = "jupyterlab_nbgallery"
 
 # Ensure a valid python version
-setuptools.python_requires=">=3.5"
+setuptools.python_requires=">=3.8"
 
 # Get the version
 version = get_version(pjoin(name, "_version.py"))
@@ -76,7 +76,7 @@ data_files_spec = [
      lab_path, "instrumentation/**"),
     ("share/jupyter/labextensions/@jupyterlab-nbgallery",
      lab_path, "userpreferences/**"),
-    ("etc/jupyter/jupyter_notebook_config.d",
+    ("etc/jupyter/jupyter_server_config.d",
      "jupyter-config", "jupyterlab_nbgallery.json"),
 ]
 
@@ -106,7 +106,7 @@ setup_args = dict(
     packages=setuptools.find_packages(),
     install_requires=[
         "jupyterlab>=4.0.0",
-        "jupyter_server>=1.4"
+        "jupyter_server>=2"
     ],
     zip_safe=False,
     include_package_data=True,
