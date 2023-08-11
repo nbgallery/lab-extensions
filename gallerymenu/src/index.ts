@@ -302,14 +302,14 @@ class galleryMenu {
   finishUpload(notebook: Notebook, gallery_metadata: any, response: stagingJson, gallery_url: URL, change_request: boolean) {
     if (gallery_metadata) {
       if (change_request) {
-        window.open(URLExt.join(gallery_url, "/notebook/", gallery_metadata.uuid, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
+        window.open(URLExt.join(gallery_url.toString(), "/notebook/", gallery_metadata.uuid, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
       } else if (gallery_metadata.link) {
-        window.open(URLExt.join(gallery_url, "/notebook/", response.link, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
+        window.open(URLExt.join(gallery_url.toString(), "/notebook/", response.link, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
       } else {
-        window.open(URLExt.join(gallery_url, + "?staged=" + response.staging_id + "#STAGE"));
+        window.open(URLExt.join(gallery_url.toString(), + "?staged=" + response.staging_id + "#STAGE").toString());
       }
     } else {
-      window.open(URLExt.join(gallery_url, + "?staged=" + response.staging_id + "#STAGE"));
+      window.open(URLExt.join(gallery_url.toString(), + "?staged=" + response.staging_id + "#STAGE").toString());
     }
   }
   async uploadCallback() {
