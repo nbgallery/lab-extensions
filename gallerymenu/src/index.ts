@@ -160,7 +160,7 @@ class galleryMenu {
     let gallery_metadata = this.getGalleryMetadata(notebook);
     try {
       let metadata_url = URLExt.join(
-        url,
+        url.href,
         'notebooks',
         gallery_metadata['uuid'],
         "metadata"
@@ -254,7 +254,7 @@ class galleryMenu {
   async downloadReplace(notebook: Notebook, gallery_url: URL) {
     let gallery_metadata = this.getGalleryMetadata(notebook);
     let url = URLExt.join(
-      gallery_url,
+      gallery_url.href,
       'notebooks',
       gallery_metadata['uuid'],
       "download"
