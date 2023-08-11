@@ -302,14 +302,14 @@ class galleryMenu {
   finishUpload(notebook: Notebook, gallery_metadata: any, response: stagingJson, gallery_url: URL, change_request: boolean) {
     if (gallery_metadata) {
       if (change_request) {
-        window.open(gallery_url + "/notebook/" + gallery_metadata.uuid + "?staged=" + response.staging_id + "#CHANGE_REQ");
+        window.open(URLExt.join(gallery_url, "/notebook/", gallery_metadata.uuid, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
       } else if (gallery_metadata.link) {
-        window.open(gallery_url + "/notebook/" + response.link + "?staged=" + response.staging_id + "#UPDATE");
+        window.open(URLExt.join(gallery_url, "/notebook/", response.link, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
       } else {
-        window.open(gallery_url + "?staged=" + response.staging_id + "#STAGE");
+        window.open(URLExt.join(gallery_url, + "?staged=" + response.staging_id + "#STAGE"));
       }
     } else {
-      window.open(gallery_url + "?staged=" + response.staging_id + "#STAGE");
+      window.open(URLExt.join(gallery_url, + "?staged=" + response.staging_id + "#STAGE"));
     }
   }
   async uploadCallback() {
@@ -470,6 +470,20 @@ class galleryMenu {
     if (this.hasCurrentNotebook()) {
       let gallery_metadata = this.getGalleryMetadata(this.currentNotebook());
       if (gallery_metadata && gallery_metadata.gallery_url && gallery_metadata.uuid) {
+        return new URL(gallery_metadata.gallery_url);
+      } else if (gallery_metadata && gallery_metadata.uuid) {
+        return new URL(this.gallery_url);
+      } else {
+        return new URL(this.gallery_url);
+      }
+    } else {
+      return new URL(this.gallery_url);
+    }
+  }
+  getNotebookLink() {
+    if (this.hasCurrentNotebook()) {
+      let gallery_metadata = this.getGalleryMetadata(this.currentNotebook());
+      if (gallery_metadata && gallery_metadata.gallery_url && gallery_metadata.uuid) {
         return new URL(
           URLExt.join(
             gallery_metadata.gallery_url,
@@ -493,7 +507,8 @@ class galleryMenu {
       return new URL(this.gallery_url);
     }
   }
-
+    
+    
   buildMenus() {
     const { commands } = this.app;
     commands.addCommand("gallery-visit", {
@@ -505,7 +520,7 @@ class galleryMenu {
         return this.hasUUID();
       },
       execute: () => {
-        window.open(this.getGalleryLink().toString());
+        window.open(this.getNotebookLink().toString());
       }
     });
     commands.addCommand("gallery-upload", {
