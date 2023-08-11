@@ -160,7 +160,7 @@ class galleryMenu {
     let gallery_metadata = this.getGalleryMetadata(notebook);
     try {
       let metadata_url = URLExt.join(
-        url.origin,
+        url,
         'notebooks',
         gallery_metadata['uuid'],
         "metadata"
@@ -201,7 +201,7 @@ class galleryMenu {
     if (showDiff) {
       let diff = await $.ajax({
         method: 'POST',
-        url: url.origin + "/notebooks/" + gallery_metadata['link'] + '/diff',
+        url: url + "/notebooks/" + gallery_metadata['link'] + '/diff',
         dataType: 'json',
         contentType: "text/plain",
         headers: {
@@ -212,7 +212,7 @@ class galleryMenu {
       });
       body.content = diff['css'] + diff['inline'];
     } else {
-      body.content = "The <a href='" + url.origin + "/notebooks/" + gallery_metadata['uuid'] + "' target='_blank'>Remote Notebook</a> has changed on Notebook Gallery.  What do you want to do?"
+      body.content = "The <a href='" + url + "/notebooks/" + gallery_metadata['uuid'] + "' target='_blank'>Remote Notebook</a> has changed on Notebook Gallery.  What do you want to do?"
     }
     const key = gallery_metadata['uuid'] + "changedDialog";
     const promise = this.dialogPromiseCache.get(key);
@@ -254,7 +254,7 @@ class galleryMenu {
   async downloadReplace(notebook: Notebook, gallery_url: URL) {
     let gallery_metadata = this.getGalleryMetadata(notebook);
     let url = URLExt.join(
-      gallery_url.origin,
+      gallery_url,
       'notebooks',
       gallery_metadata['uuid'],
       "download"
@@ -277,7 +277,7 @@ class galleryMenu {
   async stageNotebook(notebook: Notebook, gallery_url: URL, id: string) {
     let stage_url = "";
     console.log("Attempting to stage");
-    stage_url = gallery_url.origin + "/stages?agree=yes";
+    stage_url = gallery_url + "/stages?agree=yes";
     if (id && id.length > 0) {
       stage_url = stage_url + "&id=" + id;
     }
@@ -302,14 +302,14 @@ class galleryMenu {
   finishUpload(notebook: Notebook, gallery_metadata: any, response: stagingJson, gallery_url: URL, change_request: boolean) {
     if (gallery_metadata) {
       if (change_request) {
-        window.open(gallery_url.origin + "/notebook/" + gallery_metadata.uuid + "?staged=" + response.staging_id + "#CHANGE_REQ");
+        window.open(gallery_url + "/notebook/" + gallery_metadata.uuid + "?staged=" + response.staging_id + "#CHANGE_REQ");
       } else if (gallery_metadata.link) {
-        window.open(gallery_url.origin + "/notebook/" + response.link + "?staged=" + response.staging_id + "#UPDATE");
+        window.open(gallery_url + "/notebook/" + response.link + "?staged=" + response.staging_id + "#UPDATE");
       } else {
-        window.open(gallery_url.origin + "?staged=" + response.staging_id + "#STAGE");
+        window.open(gallery_url + "?staged=" + response.staging_id + "#STAGE");
       }
     } else {
-      window.open(gallery_url.origin + "?staged=" + response.staging_id + "#STAGE");
+      window.open(gallery_url + "?staged=" + response.staging_id + "#STAGE");
     }
   }
   async uploadCallback() {
