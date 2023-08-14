@@ -358,7 +358,7 @@ class galleryMenu {
       if (change_request) {
         window.open(URLExt.join(gallery_url.toString(), "notebook", gallery_metadata.uuid, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
       } else if (gallery_metadata.link) {
-        window.open(URLExt.join(gallery_url.toString(), "notebook", gallery_metadata.link, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
+        window.open(URLExt.join(gallery_url.toString(), "notebook", gallery_metadata.link, "?staged=" + response.staging_id + "#UPDATE").toString());
       } else {
         window.open(URLExt.join(gallery_url.toString(), "?staged=" + response.staging_id + "&parent_uuid=" + gallery_metadata.parent_uuid + "#STAGE").toString());
       }
@@ -426,7 +426,7 @@ class galleryMenu {
   }
   async linkNotebookIfExsists(notebook: Notebook, nb_url: string) {
     let self = this;
-    var url = new URL(nb_url)
+    let url = new URL(nb_url.replace(/\/(notebooks|nb).*/,''));
     let request_url = URLExt.join(
       nb_url,
       'uuid'
@@ -440,7 +440,7 @@ class galleryMenu {
       success: function (uuid) {
         if (uuid != null) {
           let metadata_url = URLExt.join(
-            url.origin,
+            url.href,
             'notebooks',
             uuid.uuid,
             'metadata'
@@ -455,7 +455,7 @@ class galleryMenu {
               self.setGalleryMetadata(notebook, {
                 uuid: metadata.uuid,
                 git_commit_id: metadata.commit_id,
-                gallery_url: url.origin
+                gallery_url: url.href
               });
               self.triggerSave();
             }
