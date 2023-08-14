@@ -304,7 +304,7 @@ class galleryMenu {
       if (change_request) {
         window.open(URLExt.join(gallery_url.toString(), "notebook", gallery_metadata.uuid, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
       } else if (gallery_metadata.link) {
-        window.open(URLExt.join(gallery_url.toString(), "notebook", gallery_metadata.link, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
+        window.open(URLExt.join(gallery_url.toString(), "notebook", gallery_metadata.link, "?staged=" + response.staging_id + "#UPDATE").toString());
       } else {
         window.open(URLExt.join(gallery_url.toString(), "?staged=" + response.staging_id + "#STAGE").toString());
       }
