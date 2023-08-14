@@ -79,7 +79,7 @@ class preferencesMenu {
       });
     }
     this.gallery_preferences_url = URLExt.join(
-      this.gallery_url.origin,
+      this.gallery_url.href,
       'preferences'
     );
     this.jupyter_preferences_url = URLExt.join(

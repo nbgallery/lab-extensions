@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlab-nbgallery/userpreferences",
-  "version": "2.0.0",
+  "version": "3.0.2",
   "description": "All the menu capabilities needed for saving/forking notebooks and submitting change request to Notebook Gallery",
   "keywords": [
     "jupyter",
