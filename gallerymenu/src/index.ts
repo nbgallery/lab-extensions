@@ -196,7 +196,7 @@ class galleryMenu {
     let body = new DialogWidget();
     let diff = await $.ajax({
       method: 'POST',
-      url: URLExt.join(url.href, "notebooks", gallery_metadata['uuid'], "diff"),
+      url: URLExt.join(url.href, "notebooks", gallery_metadata['uuid'], "diff").toString(),
       dataType: 'json',
       contentType: "text/plain",
       headers: {
