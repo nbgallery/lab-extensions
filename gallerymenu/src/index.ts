@@ -201,7 +201,7 @@ class galleryMenu {
     if (showDiff) {
       let diff = await $.ajax({
         method: 'POST',
-        url: url + "/notebooks/" + gallery_metadata['link'] + '/diff',
+        url: URLExt.join(url.toString(), "notebooks", gallery_metadata['link'], 'diff').toString(),
         dataType: 'json',
         contentType: "text/plain",
         headers: {
@@ -212,7 +212,7 @@ class galleryMenu {
       });
       body.content = diff['css'] + diff['inline'];
     } else {
-      body.content = "The <a href='" + url + "/notebooks/" + gallery_metadata['uuid'] + "' target='_blank'>Remote Notebook</a> has changed on Notebook Gallery.  What do you want to do?"
+      body.content = "The <a href='" + URLExt.join(url.toString(), "notebooks", gallery_metadata['uuid']).toString() + "' target='_blank'>Remote Notebook</a> has changed on Notebook Gallery.  What do you want to do?"
     }
     const key = gallery_metadata['uuid'] + "changedDialog";
     const promise = this.dialogPromiseCache.get(key);
@@ -277,7 +277,7 @@ class galleryMenu {
   async stageNotebook(notebook: Notebook, gallery_url: URL, id: string) {
     let stage_url = "";
     console.log("Attempting to stage");
-    stage_url = gallery_url + "/stages?agree=yes";
+    stage_url = URLExt.join(gallery_url.toString(), "stages?agree=yes").toString();
     if (id && id.length > 0) {
       stage_url = stage_url + "&id=" + id;
     }
@@ -302,9 +302,9 @@ class galleryMenu {
   finishUpload(notebook: Notebook, gallery_metadata: any, response: stagingJson, gallery_url: URL, change_request: boolean) {
     if (gallery_metadata) {
       if (change_request) {
-        window.open(URLExt.join(gallery_url.toString(), "/notebook/", gallery_metadata.uuid, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
+        window.open(URLExt.join(gallery_url.toString(), "notebook", gallery_metadata.uuid, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
       } else if (gallery_metadata.link) {
-        window.open(URLExt.join(gallery_url.toString(), "/notebook/", gallery_metadata.link, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
+        window.open(URLExt.join(gallery_url.toString(), "notebook", gallery_metadata.link, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
       } else {
         window.open(URLExt.join(gallery_url.toString(), "?staged=" + response.staging_id + "#STAGE").toString());
       }
