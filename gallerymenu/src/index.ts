@@ -371,7 +371,7 @@ class galleryMenu {
   }
   async linkNotebookIfExsists(notebook: Notebook, nb_url: string) {
     let self = this;
-    var url = new URL(nb_url)
+    let url = new URL(nb_url.replace(/\/(notebooks|nb).*/,""));
     let request_url = URLExt.join(
       nb_url,
       'uuid'
