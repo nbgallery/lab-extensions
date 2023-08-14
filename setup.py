@@ -105,7 +105,7 @@ setup_args = dict(
     cmdclass=cmdclass,
     packages=setuptools.find_packages(),
     install_requires=[
-        "jupyterlab>=3.1.0",
+        "jupyterlab~=3.0",
         "jupyter-nbgallery~=2.0",
         "jupyter_server>=1.4"
     ],

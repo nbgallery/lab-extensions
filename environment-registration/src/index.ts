@@ -10,6 +10,7 @@ import {
 import { requestAPI } from './nbgallery';
 
 import {
+  URLExt,
   PageConfig
 } from '@jupyterlab/coreutils';
 
@@ -50,7 +51,7 @@ const extension: JupyterFrontEndPlugin<void> = {
         $.ajax({
           method: 'POST',
           headers: { 'Accept': 'application/json' },
-          url: nbgallery_url + '/environments',
+          url: URLExt.join(nbgallery_url, 'environments').toString(),
           data: {
             name: nbgallery_client_name,
             url: get_url(),
