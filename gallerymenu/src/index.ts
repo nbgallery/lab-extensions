@@ -315,7 +315,11 @@ class galleryMenu {
     );
     try {
       let response = await $.ajax({
-        url: url
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        url: url,
+        cache: false,
+        xhrFields: { withCredentials: true }
       });
       let notebook_content = JSON.parse(response);
       if (gallery_metadata["link"]) {
