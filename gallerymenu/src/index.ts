@@ -425,12 +425,12 @@ class galleryMenu {
   }
   async linkCallback() {
     InputDialog.getText({ title: 'Please enter the Notebook URL' }).then(url => {
-      this.linkNotebookIfExsists(this.currentNotebook(), url.value);
+      this.linkNotebookIfExists(this.currentNotebook(), url.value);
     });
   }
-  async linkNotebookIfExsists(notebook: Notebook, nb_url: string) {
+  async linkNotebookIfExists(notebook: Notebook, nb_url: string) {
     let self = this;
-    let url = new URL(nb_url.replace(/\/(notebooks|nb).*/,''));
+    let url = new URL(nb_url);
     let request_url = URLExt.join(
       nb_url,
       'uuid'
@@ -444,7 +444,7 @@ class galleryMenu {
       success: function (uuid) {
         if (uuid != null) {
           let metadata_url = URLExt.join(
-            url.href,
+            url.origin,
             'notebooks',
             uuid.uuid,
             'metadata'
@@ -459,7 +459,7 @@ class galleryMenu {
               self.setGalleryMetadata(notebook, {
                 uuid: metadata.uuid,
                 git_commit_id: metadata.commit_id,
-                gallery_url: url.href
+                gallery_url: url.origin
               });
               self.triggerSave();
             }
