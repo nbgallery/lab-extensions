@@ -2,7 +2,7 @@
   "title": "Environment Registration",
   "description": "Environment Regitration.",
   "type": "object",
-  "properties":{
+  "properties": {
     "registered": {
       "type": "boolean",
       "title": "Is registered?",
@@ -13,7 +13,7 @@
       "type": "string",
       "title": "URL User for registration",
       "description": "Url for NBGallery",
-      "default":""
+      "default": ""
     },
     "nbgallery_client_name": {
       "type": "string",

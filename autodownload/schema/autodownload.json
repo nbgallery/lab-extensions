@@ -2,7 +2,7 @@
   "title": "Automatic Download",
   "description": "Automatic Download Settings",
   "type": "object",
-  "properties":{
+  "properties": {
     "enabled": {
       "type": "boolean",
       "title": "Is auto download enabled?",
