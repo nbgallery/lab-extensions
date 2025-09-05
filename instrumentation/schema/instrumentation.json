@@ -2,7 +2,7 @@
   "title": "Instrumentation Settings",
   "description": "Should Jupyter report cell execution to NBGallery?",
   "type": "object",
-  "properties":{
+  "properties": {
     "enabled": {
       "type": "boolean",
       "title": "Is instrumentation enabled?",

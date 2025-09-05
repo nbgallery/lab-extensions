@@ -1,49 +1,36 @@
 import {
   JupyterFrontEnd,
-  JupyterFrontEndPlugin
-} from '@jupyterlab/application';
+  JupyterFrontEndPlugin,
+} from "@jupyterlab/application";
 
-import {
-  IMainMenu
-} from '@jupyterlab/mainmenu';
+import { IMainMenu } from "@jupyterlab/mainmenu";
 
 import {
   Dialog,
   InputDialog,
   showDialog,
-  showErrorMessage
-} from '@jupyterlab/apputils';
+  showErrorMessage,
+} from "@jupyterlab/apputils";
 
-import {
-  Menu,
-  MenuBar
-} from '@lumino/widgets'
+import { Menu, MenuBar } from "@lumino/widgets";
 
-import {
-  INotebookTracker,
-  Notebook
-} from '@jupyterlab/notebook';
+import { INotebookTracker, Notebook } from "@jupyterlab/notebook";
 
-import { ServerConnection } from '@jupyterlab/services';
+import { ServerConnection } from "@jupyterlab/services";
 
-import {
-  URLExt,
-  PageConfig
-} from '@jupyterlab/coreutils';
+import { URLExt, PageConfig } from "@jupyterlab/coreutils";
 
-import {
-  ISettingRegistry
-} from '@jupyterlab/settingregistry';
+import { ISettingRegistry } from "@jupyterlab/settingregistry";
 
-import { DialogWidget } from './dialog'
+import { DialogWidget } from "./dialog";
 
-import $ from 'jquery';
+import $ from "jquery";
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: "@jupyterlab-nbgallery/gallerymenu",
   autoStart: true,
   requires: [IMainMenu, INotebookTracker, ISettingRegistry],
-  activate
+  activate,
 };
 
 class stagingJson {
@@ -64,13 +51,23 @@ class galleryMenu {
   settingsRegistry: ISettingRegistry;
   settings: ISettingRegistry.ISettings;
   dialogPromiseCache: Map<string, Promise<void>> = new Map();
-  constructor(app: JupyterFrontEnd, mainMenu: IMainMenu, notebooks: INotebookTracker, settingsRegistry: ISettingRegistry) {
+  constructor(
+    app: JupyterFrontEnd,
+    mainMenu: IMainMenu,
+    notebooks: INotebookTracker,
+    settingsRegistry: ISettingRegistry,
+  ) {
     this.gallery_url = "";
     this.app = app;
     this.mainMenu = mainMenu;
     this.notebooks = notebooks;
     this.settingsRegistry = settingsRegistry;
-    Promise.all([this.app.restored, this.settingsRegistry.load('@jupyterlab-nbgallery/environment-registration:environment-registration')]).then(([,setting]) => {
+    Promise.all([
+      this.app.restored,
+      this.settingsRegistry.load(
+        "@jupyterlab-nbgallery/environment-registration:environment-registration",
+      ),
+    ]).then(([, setting]) => {
       this.settings = setting;
       this.initialize();
     });
@@ -80,23 +77,23 @@ class galleryMenu {
     const settings = ServerConnection.makeSettings();
     const requestUrl = URLExt.join(
       settings.baseUrl,
-      'jupyterlab_nbgallery',
-      'environment'
+      "jupyterlab_nbgallery",
+      "environment",
     );
-    this.gallery_url = this.settings.get('nbgallery_url').composite as string;
+    this.gallery_url = this.settings.get("nbgallery_url").composite as string;
     let self = this;
     await $.ajax({
-      method: 'GET',
-      headers: { Accept: 'application/json' },
+      method: "GET",
+      headers: { Accept: "application/json" },
       url: requestUrl,
       cache: false,
       xhrFields: { withCredentials: true },
       success: function (environment) {
         if (self.gallery_url == "") {
-          self.gallery_url = environment['NBGALLERY_URL'];
+          self.gallery_url = environment["NBGALLERY_URL"];
         }
-        self.default_tags = environment['DEFAULT_TAGS'];
-      }
+        self.default_tags = environment["DEFAULT_TAGS"];
+      },
     });
     this.gallery_menu = this.buildMenus();
     this.mainMenu.addMenu(this.gallery_menu, true, { rank: 50 });
@@ -111,10 +108,14 @@ class galleryMenu {
     notebook.model.sharedModel.setMetadata("gallery", metadata);
     this.triggerSave(); //Not ideal but hopefully they didn't switch notebooks. Research a better way
   }
-  updateMetadata(notebook: Notebook, gallery_metadata: any, response: stagingJson) {
+  updateMetadata(
+    notebook: Notebook,
+    gallery_metadata: any,
+    response: stagingJson,
+  ) {
     let linked = gallery_metadata && gallery_metadata.link;
     let cloned = gallery_metadata && gallery_metadata.clone;
-    gallery_metadata ||= {}
+    gallery_metadata ||= {};
     gallery_metadata.commit = response.commit;
     //used for injecting the IDs into the environment. Make sure it's current
     gallery_metadata.staging_id = response.staging_id;
@@ -147,7 +148,7 @@ class galleryMenu {
     let notebook_json = JSON.parse(notebook.model.toString());
     var i: string;
     for (i in notebook_json["cells"]) {
-      if (notebook_json["cells"][i].cell_type == 'code') {
+      if (notebook_json["cells"][i].cell_type == "code") {
         notebook_json["cells"][i].outputs = [];
         notebook_json["cells"][i].execution_count = null;
       } else {
@@ -165,25 +166,28 @@ class galleryMenu {
     try {
       let metadata_url = URLExt.join(
         url.href,
-        'notebooks',
-        gallery_metadata['uuid'],
-        "metadata"
+        "notebooks",
+        gallery_metadata["uuid"],
+        "metadata",
       );
       let results = await $.ajax({
         method: "GET",
         url: metadata_url,
         headers: {
-          Accept: "application/json"
+          Accept: "application/json",
         },
-        xhrFields: { withCredentials: true }
+        xhrFields: { withCredentials: true },
       });
-      if (results["commit_id"] != gallery_metadata['commit']) {
+      if (results["commit_id"] != gallery_metadata["commit"]) {
         return true;
       } else {
         return false;
       }
     } catch (error) {
-      showErrorMessage("Staging Failed", "An error occured checking for updates to the specified notebook.  Please ensure that you are logged in to the Gallery.");
+      showErrorMessage(
+        "Staging Failed",
+        "An error occured checking for updates to the specified notebook.  Please ensure that you are logged in to the Gallery.",
+      );
     }
   }
   async diffCallback(): Promise<void> {
@@ -195,41 +199,47 @@ class galleryMenu {
     let title = "Diff with Remote Notebook";
     let body = new DialogWidget();
     let diff = await $.ajax({
-      method: 'POST',
-      url: URLExt.join(url.href, "notebooks", gallery_metadata['uuid'], "diff").toString(),
-      dataType: 'json',
+      method: "POST",
+      url: URLExt.join(
+        url.href,
+        "notebooks",
+        gallery_metadata["uuid"],
+        "diff",
+      ).toString(),
+      dataType: "json",
       contentType: "text/plain",
       headers: {
-        accept: "application/json"
+        accept: "application/json",
       },
       data: JSON.stringify(this.stripOutput(notebook)),
       xhrFields: { withCredentials: true },
     });
-    if(diff['different']){
-      body.content = "<div style='color:#000'>" + diff['css'] + diff['inline']+"</div>";
-    }else{
+    if (diff["different"]) {
+      body.content =
+        "<div style='color:#000'>" + diff["css"] + diff["inline"] + "</div>";
+    } else {
       body.content = "<div>No Changes</div>";
     }
-    
-    const key = gallery_metadata['uuid'] + "changedDialog";
+
+    const key = gallery_metadata["uuid"] + "changedDialog";
     const promise = this.dialogPromiseCache.get(key);
     if (promise) {
       return promise;
     } else {
-      const dialogPromise:any = showDialog({
+      const dialogPromise: any = showDialog({
         title: title,
         body: body,
-        buttons: buttons
+        buttons: buttons,
       }).then(
-        async (result:any) => {
+        async (result: any) => {
           this.dialogPromiseCache.delete(key);
         },
-        error => {
+        (error) => {
           // TODO: Use .finally() above when supported
           this.dialogPromiseCache.delete(key);
           throw error;
           return dialogPromise;
-        }
+        },
       );
       this.dialogPromiseCache.set(key, dialogPromise);
       return dialogPromise;
@@ -245,37 +255,56 @@ class galleryMenu {
     if (!showDiff) {
       buttons[buttons.length] = Dialog.okButton({ label: "View Diff" });
     }
-    buttons[buttons.length] = Dialog.okButton({ label: "Download and Replace Local", displayType: "warn" });
-    if (gallery_metadata['link']) {
-      buttons[buttons.length] = Dialog.okButton({ label: "Upload and Replace Remote", displayType: "warn" });
+    buttons[buttons.length] = Dialog.okButton({
+      label: "Download and Replace Local",
+      displayType: "warn",
+    });
+    if (gallery_metadata["link"]) {
+      buttons[buttons.length] = Dialog.okButton({
+        label: "Upload and Replace Remote",
+        displayType: "warn",
+      });
     }
     let title = "Remote Notebook Has Changed";
     let body = new DialogWidget();
     if (showDiff) {
       let diff = await $.ajax({
-        method: 'POST',
-        url: URLExt.join(url.href, "notebooks", gallery_metadata['link'], '/diff').toString(),
-        dataType: 'json',
+        method: "POST",
+        url: URLExt.join(
+          url.href,
+          "notebooks",
+          gallery_metadata["link"],
+          "/diff",
+        ).toString(),
+        dataType: "json",
         contentType: "text/plain",
         headers: {
-          accept: "application/json"
+          accept: "application/json",
         },
         data: JSON.stringify(this.stripOutput(notebook)),
         xhrFields: { withCredentials: true },
       });
-      body.content = "<div style='color:#000'>" + diff['css'] + diff['inline']+"</div>";
+      body.content =
+        "<div style='color:#000'>" + diff["css"] + diff["inline"] + "</div>";
     } else {
-      body.content = "The <a href='" + URLExt.join(url.toString(), "notebooks", gallery_metadata['uuid']).toString() + "' target='_blank'>Remote Notebook</a> has changed on Notebook Gallery.  What do you want to do?"
+      body.content =
+        "The <a href='" +
+        URLExt.join(
+          url.toString(),
+          "notebooks",
+          gallery_metadata["uuid"],
+        ).toString() +
+        "' target='_blank'>Remote Notebook</a> has changed on Notebook Gallery.  What do you want to do?";
     }
-    const key = gallery_metadata['uuid'] + "changedDialog";
+    const key = gallery_metadata["uuid"] + "changedDialog";
     const promise = this.dialogPromiseCache.get(key);
     if (promise) {
       return promise;
     } else {
-      const dialogPromise:any = showDialog({
+      const dialogPromise: any = showDialog({
         title: title,
         body: body,
-        buttons: buttons
+        buttons: buttons,
       }).then(
         async (result) => {
           this.dialogPromiseCache.delete(key);
@@ -283,23 +312,33 @@ class galleryMenu {
             this.downloadReplace(notebook, url);
           } else if (result.button.label == "Upload and Replace Remote") {
             this.triggerSave();
-            let stagingResults = await this.stageNotebook(notebook, url, gallery_metadata.uuid);
+            let stagingResults = await this.stageNotebook(
+              notebook,
+              url,
+              gallery_metadata.uuid,
+            );
             if (stagingResults) {
-              this.finishUpload(notebook, gallery_metadata, stagingResults, url, false, "");
+              this.finishUpload(
+                notebook,
+                gallery_metadata,
+                stagingResults,
+                url,
+                false,
+                "",
+              );
               this.updateMetadata(notebook, gallery_metadata, stagingResults);
             }
           } else if (result.button.label == "View Diff") {
             this.changedDialog(true);
           } else {
-
           }
         },
-        error => {
+        (error) => {
           // TODO: Use .finally() above when supported
           this.dialogPromiseCache.delete(key);
           throw error;
           return dialogPromise;
-        }
+        },
       );
       this.dialogPromiseCache.set(key, dialogPromise);
       return dialogPromise;
@@ -309,27 +348,31 @@ class galleryMenu {
     let gallery_metadata = this.getGalleryMetadata(notebook);
     let url = URLExt.join(
       gallery_url.href,
-      'notebooks',
-      gallery_metadata['uuid'],
-      "download"
+      "notebooks",
+      gallery_metadata["uuid"],
+      "download",
     );
     try {
       let response = await $.ajax({
-        method: 'GET',
-        headers: { Accept: 'application/json' },
+        method: "GET",
+        headers: { Accept: "application/json" },
         url: url,
         cache: false,
-        xhrFields: { withCredentials: true }
+        xhrFields: { withCredentials: true },
       });
       let notebook_content = JSON.parse(response);
       if (gallery_metadata["link"]) {
-        notebook_content["metadata"]["gallery"]["link"] = gallery_metadata["link"];
+        notebook_content["metadata"]["gallery"]["link"] =
+          gallery_metadata["link"];
         notebook_content["metadata"]["gallery"]["clone"] = null;
       }
       notebook.model.fromJSON(notebook_content);
       this.triggerSave();
     } catch (e) {
-      showErrorMessage("Download Error", "An error occured attempting to download the specified notebook.");
+      showErrorMessage(
+        "Download Error",
+        "An error occured attempting to download the specified notebook.",
+      );
     }
   }
   async stageNotebook(notebook: Notebook, gallery_url: URL, id: string) {
@@ -343,31 +386,73 @@ class galleryMenu {
       let results: any = await $.ajax({
         method: "POST",
         url: stage_url,
-        dataType: 'json',
+        dataType: "json",
         contentType: "text/plain",
         headers: {
-          Accept: "application/json"
+          Accept: "application/json",
         },
         xhrFields: { withCredentials: true },
-        data: JSON.stringify(this.stripOutput(notebook))
+        data: JSON.stringify(this.stripOutput(notebook)),
       });
       return results;
     } catch (error) {
-      showErrorMessage("Staging Failed", "An error occured attempting to upload the specified notebook.  Please ensure that you are logged in to the Gallery.");
+      showErrorMessage(
+        "Staging Failed",
+        "An error occured attempting to upload the specified notebook.  Please ensure that you are logged in to the Gallery.",
+      );
       return;
     }
   }
-  finishUpload(notebook: Notebook, gallery_metadata: any, response: stagingJson, gallery_url: URL, change_request: boolean, default_tags: string) {
+  finishUpload(
+    notebook: Notebook,
+    gallery_metadata: any,
+    response: stagingJson,
+    gallery_url: URL,
+    change_request: boolean,
+    default_tags: string,
+  ) {
     if (gallery_metadata) {
       if (change_request) {
-        window.open(URLExt.join(gallery_url.toString(), "notebook", gallery_metadata.uuid, "?staged=" + response.staging_id + "#CHANGE_REQ").toString());
+        window.open(
+          URLExt.join(
+            gallery_url.toString(),
+            "notebook",
+            gallery_metadata.uuid,
+            "?staged=" + response.staging_id + "#CHANGE_REQ",
+          ).toString(),
+        );
       } else if (gallery_metadata.link) {
-        window.open(URLExt.join(gallery_url.toString(), "notebook", gallery_metadata.link, "?staged=" + response.staging_id + "#UPDATE").toString());
+        window.open(
+          URLExt.join(
+            gallery_url.toString(),
+            "notebook",
+            gallery_metadata.link,
+            "?staged=" + response.staging_id + "#UPDATE",
+          ).toString(),
+        );
       } else {
-        window.open(URLExt.join(gallery_url.toString(), "?staged=" + response.staging_id + "&parent_uuid=" + gallery_metadata.parent_uuid + "#STAGE").toString());
+        window.open(
+          URLExt.join(
+            gallery_url.toString(),
+            "?staged=" +
+              response.staging_id +
+              "&parent_uuid=" +
+              gallery_metadata.parent_uuid +
+              "#STAGE",
+          ).toString(),
+        );
       }
     } else {
-      window.open(URLExt.join(gallery_url.toString(), "?staged=" + response.staging_id + "&tags=" + encodeURIComponent(default_tags) + "#STAGE").toString());
+      window.open(
+        URLExt.join(
+          gallery_url.toString(),
+          "?staged=" +
+            response.staging_id +
+            "&tags=" +
+            encodeURIComponent(default_tags) +
+            "#STAGE",
+        ).toString(),
+      );
     }
   }
   async uploadCallback() {
@@ -379,7 +464,14 @@ class galleryMenu {
     let stagingResults = await this.stageNotebook(notebook, url, null);
     let default_tags = this.default_tags;
     if (stagingResults) {
-      this.finishUpload(notebook, gallery_metadata, stagingResults, url, false, default_tags);
+      this.finishUpload(
+        notebook,
+        gallery_metadata,
+        stagingResults,
+        url,
+        false,
+        default_tags,
+      );
       this.updateMetadata(notebook, gallery_metadata, stagingResults);
     }
   }
@@ -393,9 +485,20 @@ class galleryMenu {
     if (changed) {
       this.changedDialog(false);
     } else {
-      let stagingResults = await this.stageNotebook(notebook, url, gallery_metadata.uuid);
+      let stagingResults = await this.stageNotebook(
+        notebook,
+        url,
+        gallery_metadata.uuid,
+      );
       if (stagingResults) {
-        this.finishUpload(notebook, gallery_metadata, stagingResults, url, false, "");
+        this.finishUpload(
+          notebook,
+          gallery_metadata,
+          stagingResults,
+          url,
+          false,
+          "",
+        );
         this.updateMetadata(notebook, gallery_metadata, stagingResults);
       }
     }
@@ -406,12 +509,22 @@ class galleryMenu {
     notebook = this.currentNotebook();
     let gallery_metadata = this.getGalleryMetadata(notebook);
     let url = this.getGalleryLink();
-    let stagingResults = await this.stageNotebook(notebook, url, gallery_metadata.uuid);
+    let stagingResults = await this.stageNotebook(
+      notebook,
+      url,
+      gallery_metadata.uuid,
+    );
     if (stagingResults) {
-      this.finishUpload(notebook, gallery_metadata, stagingResults, url, true, "");
+      this.finishUpload(
+        notebook,
+        gallery_metadata,
+        stagingResults,
+        url,
+        true,
+        "",
+      );
       this.updateMetadata(notebook, gallery_metadata, stagingResults);
     }
-
   }
   async changesCallback() {
     this.triggerSave();
@@ -424,20 +537,19 @@ class galleryMenu {
     }
   }
   async linkCallback() {
-    InputDialog.getText({ title: 'Please enter the Notebook URL' }).then(url => {
-      this.linkNotebookIfExists(this.currentNotebook(), url.value);
-    });
+    InputDialog.getText({ title: "Please enter the Notebook URL" }).then(
+      (url) => {
+        this.linkNotebookIfExists(this.currentNotebook(), url.value);
+      },
+    );
   }
   async linkNotebookIfExists(notebook: Notebook, nb_url: string) {
     let self = this;
     let url = new URL(nb_url);
-    let request_url = URLExt.join(
-      nb_url,
-      'uuid'
-    );
+    let request_url = URLExt.join(nb_url, "uuid");
     $.ajax({
-      method: 'GET',
-      headers: { Accept: 'application/json' },
+      method: "GET",
+      headers: { Accept: "application/json" },
       url: request_url,
       cache: false,
       xhrFields: { withCredentials: true },
@@ -445,13 +557,13 @@ class galleryMenu {
         if (uuid != null) {
           let metadata_url = URLExt.join(
             url.origin,
-            'notebooks',
+            "notebooks",
             uuid.uuid,
-            'metadata'
+            "metadata",
           );
           $.ajax({
-            method: 'GET',
-            headers: { Accept: 'application/json' },
+            method: "GET",
+            headers: { Accept: "application/json" },
             url: metadata_url,
             cache: false,
             xhrFields: { withCredentials: true },
@@ -459,21 +571,25 @@ class galleryMenu {
               self.setGalleryMetadata(notebook, {
                 uuid: metadata.uuid,
                 git_commit_id: metadata.commit_id,
-                gallery_url: url.origin
+                gallery_url: url.origin,
               });
               self.triggerSave();
-            }
+            },
           });
         }
       },
       error: function () {
         console.error("Notebook not found");
-      }
+      },
     });
   }
 
   async unlinkCallback() {
-    InputDialog.getBoolean({ title: "Are you sure you want to unlink this notebook from gallery?", label: "Yes", value: true }).then(response => {
+    InputDialog.getBoolean({
+      title: "Are you sure you want to unlink this notebook from gallery?",
+      label: "Yes",
+      value: true,
+    }).then((response) => {
       if (response.value) {
         let notebook = this.currentNotebook();
         this.setGalleryMetadata(notebook, {});
@@ -486,7 +602,12 @@ class galleryMenu {
     return this.notebooks.currentWidget.content;
   }
   hasCurrentNotebook(): boolean {
-    return (this.notebooks.currentWidget === this.app.shell.currentWidget && this.notebooks.currentWidget.content != null && this.notebooks.currentWidget.content.model != null && this.notebooks.currentWidget.content.model.cells != null)
+    return (
+      this.notebooks.currentWidget === this.app.shell.currentWidget &&
+      this.notebooks.currentWidget.content != null &&
+      this.notebooks.currentWidget.content.model != null &&
+      this.notebooks.currentWidget.content.model.cells != null
+    );
   }
   hasLinkedNotebook() {
     if (this.hasCurrentNotebook()) {
@@ -494,7 +615,7 @@ class galleryMenu {
       if (!gallery_metadata) {
         return false;
       } else {
-        return (gallery_metadata.link != null)
+        return gallery_metadata.link != null;
       }
     } else {
       return false;
@@ -506,7 +627,7 @@ class galleryMenu {
       if (!gallery_metadata) {
         return false;
       } else {
-        return (gallery_metadata.clone != null)
+        return gallery_metadata.clone != null;
       }
     } else {
       return false;
@@ -518,7 +639,11 @@ class galleryMenu {
       if (!gallery_metadata || !gallery_metadata.uuid) {
         return false;
       } else {
-        return (!gallery_metadata.clone != null || gallery_metadata.link != null || gallery_metadata.uuid != null)
+        return (
+          !gallery_metadata.clone != null ||
+          gallery_metadata.link != null ||
+          gallery_metadata.uuid != null
+        );
       }
     } else {
       return false;
@@ -528,7 +653,11 @@ class galleryMenu {
   getGalleryLink() {
     if (this.hasCurrentNotebook()) {
       let gallery_metadata = this.getGalleryMetadata(this.currentNotebook());
-      if (gallery_metadata && gallery_metadata.gallery_url && gallery_metadata.uuid) {
+      if (
+        gallery_metadata &&
+        gallery_metadata.gallery_url &&
+        gallery_metadata.uuid
+      ) {
         return new URL(gallery_metadata.gallery_url);
       } else if (gallery_metadata && gallery_metadata.uuid) {
         return new URL(this.gallery_url);
@@ -542,22 +671,21 @@ class galleryMenu {
   getNotebookLink() {
     if (this.hasCurrentNotebook()) {
       let gallery_metadata = this.getGalleryMetadata(this.currentNotebook());
-      if (gallery_metadata && gallery_metadata.gallery_url && gallery_metadata.uuid) {
+      if (
+        gallery_metadata &&
+        gallery_metadata.gallery_url &&
+        gallery_metadata.uuid
+      ) {
         return new URL(
           URLExt.join(
             gallery_metadata.gallery_url,
-            'nb',
-            gallery_metadata.uuid
-          )
+            "nb",
+            gallery_metadata.uuid,
+          ),
         );
-
       } else if (gallery_metadata && gallery_metadata.uuid) {
         return new URL(
-          URLExt.join(
-            this.gallery_url,
-            'nb',
-            gallery_metadata.uuid
-          )
+          URLExt.join(this.gallery_url, "nb", gallery_metadata.uuid),
         );
       } else {
         return new URL(this.gallery_url);
@@ -579,19 +707,23 @@ class galleryMenu {
       },
       execute: () => {
         window.open(this.getNotebookLink().toString());
-      }
+      },
     });
     commands.addCommand("gallery-upload", {
       label: "Upload to the Gallery",
       isEnabled: () => {
-        return (this.gallery_url != "" && !this.hasUUID() && this.hasCurrentNotebook());
+        return (
+          this.gallery_url != "" && !this.hasUUID() && this.hasCurrentNotebook()
+        );
       },
       isVisible: () => {
-        return (this.gallery_url != "" && !this.hasUUID() && this.hasCurrentNotebook());
+        return (
+          this.gallery_url != "" && !this.hasUUID() && this.hasCurrentNotebook()
+        );
       },
       execute: () => {
         this.uploadCallback();
-      }
+      },
     });
     commands.addCommand("gallery-save", {
       label: "Save Changes to Gallery",
@@ -603,7 +735,7 @@ class galleryMenu {
       },
       execute: () => {
         this.saveCallback();
-      }
+      },
     });
     commands.addCommand("gallery-fork", {
       label: "Upload as a New Notebook (Fork)",
@@ -615,10 +747,10 @@ class galleryMenu {
       },
       execute: () => {
         let notebook = this.currentNotebook();
-        let parent_uuid=this.getGalleryMetadata(notebook).uuid;
-        this.setGalleryMetadata(notebook, {"parent_uuid":parent_uuid});
+        let parent_uuid = this.getGalleryMetadata(notebook).uuid;
+        this.setGalleryMetadata(notebook, { parent_uuid: parent_uuid });
         this.uploadCallback();
-      }
+      },
     });
     commands.addCommand("gallery-changereq", {
       label: "Submit Change Request",
@@ -630,7 +762,7 @@ class galleryMenu {
       },
       execute: () => {
         this.changereqCallback();
-      }
+      },
     });
     commands.addCommand("gallery-checkupdates", {
       label: "Check for Changes",
@@ -642,7 +774,7 @@ class galleryMenu {
       },
       execute: () => {
         this.changesCallback();
-      }
+      },
     });
     commands.addCommand("gallery-showdiff", {
       label: "Show Diff with Gallery",
@@ -654,7 +786,7 @@ class galleryMenu {
       },
       execute: () => {
         this.diffCallback();
-      }
+      },
     });
     commands.addCommand("gallery-unlink", {
       label: "Unlink from Gallery",
@@ -666,7 +798,7 @@ class galleryMenu {
       },
       execute: () => {
         this.unlinkCallback();
-      }
+      },
     });
     commands.addCommand("gallery-link", {
       label: "Link to Notebook in Gallery",
@@ -678,7 +810,7 @@ class galleryMenu {
       },
       execute: () => {
         this.linkCallback();
-      }
+      },
     });
     var menu: Menu;
     menu = null;
@@ -686,7 +818,7 @@ class galleryMenu {
     var menus = menubar.menus;
     for (let i = 0; i < menus.length; i++) {
       if (menus[i].id == "jupyterlab_nbgallery-gallery") {
-        menu = menus[i]
+        menu = menus[i];
       }
     }
     if (menu == null) {
@@ -706,12 +838,16 @@ class galleryMenu {
     menu.addItem({ command: "gallery-visit" });
     return menu;
   }
-
 }
 
 export default plugin;
 
-function activate(app: JupyterFrontEnd, mainMenu: IMainMenu, notebooks: INotebookTracker, settingsRegistry: ISettingRegistry) {
+function activate(
+  app: JupyterFrontEnd,
+  mainMenu: IMainMenu,
+  notebooks: INotebookTracker,
+  settingsRegistry: ISettingRegistry,
+) {
   if (!notebooks) {
     return;
   }
